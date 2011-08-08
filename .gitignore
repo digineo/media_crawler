@@ -2,4 +2,6 @@
 /.project
 /db/*.sqlite3
 /log
+/solr/data
 /tmp
+*.css

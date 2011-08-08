@@ -1,0 +1,15 @@
+%h1 Search by metadata
+
+= render :partial => 'search'
+
+%h2 Results
+
+#facets
+  = render :partial => 'facets'
+
+#results
+  %p #{collection.total} files found
+  
+  %ol
+    - collection.each_hit_with_result do |hit, resource|
+      %li= render :partial => 'result', :locals => {:hit => hit, :resource => resource}

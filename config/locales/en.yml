@@ -2,4 +2,8 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  facets:
+    duration:
+      "0-60": up to 1 hour
+      "61-120": 1-2 hours
+      "121-999": more than 2 hours

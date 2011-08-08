@@ -1,0 +1,5 @@
+%form
+  %label{:for => :query} Query
+  = text_field_tag :query, params[:query], :id => 'query'
+
+  = submit_tag 'Search', :name => nil
