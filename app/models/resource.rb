@@ -10,5 +10,9 @@ class Resource < ActiveRecord::Base
   
   include Resource::Metadata
   include Resource::Search
-
+  
+  def uri
+    "#{path}"
+  end
+  
 end

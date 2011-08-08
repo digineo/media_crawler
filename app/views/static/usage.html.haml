@@ -1,0 +1,18 @@
+%h1 Usage
+
+%dl.usage
+  %dt duration:[n..m]
+  %dd Duration between n and m minutes
+  
+  %dt duration_min:[n]
+  %dd Duration of n minutes or more
+  
+  %dt duration_max:[n]
+  %dd Duration of n minutes or less
+  
+  %dt resolution:[name]
+  %dd
+    Possible values are
+    = Resource::Metadata::RESOLUTIONS.map(&:first).map{ |value| "<code>#{h value}</code>" }.join(", ").html_safe
+    and
+    %code unknown

@@ -1,5 +1,8 @@
 class ResourcesController < ApplicationController
   
+  PAGELEN_DEFAULT = 20
+  PAGELEN_MAX     = 500
+  
   inherit_resources
   
   protected
@@ -41,7 +44,12 @@ class ResourcesController < ApplicationController
       :subtitle_languages => @filters[:subtitle_language],
     }
     
+    
+    
     @resources ||= resource_class.search do
+      
+      paginate(:page => params[:page], :per_page => per_page)
+      
       keywords query do
         highlight :path
       end
@@ -71,7 +79,12 @@ class ResourcesController < ApplicationController
       end
     end
     
-    #raise @resources.hits.inspect
+  end
+  
+  def per_page
+    per_page = params[:per_page].to_i
+    per_page = PAGELEN_DEFAULT if per_page < 1
+    [per_page, PAGELEN_MAX].min
   end
   
   def parse_duration(value)

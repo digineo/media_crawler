@@ -2,13 +2,12 @@
 
 = render :partial => 'search'
 
-%h2 Results
-
 #facets
+  %h2 Filters
   = render :partial => 'facets'
 
 #results
-  %p #{collection.total} files found
+  %h2 #{collection.total} files found
   
   %ol
     - collection.each_hit_with_result do |hit, resource|

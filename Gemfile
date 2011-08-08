@@ -1,13 +1,10 @@
 source 'http://rubygems.org'
 
 gem 'rails', '~> 3.0.9'
-
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
-
 gem 'mysql2', '~> 0.2.6'
+
 gem 'streamio-ffmpeg',
-  :git => 'git@github.com:digineo/streamio-ffmpeg.git'
+  :git => 'git://github.com/digineo/streamio-ffmpeg.git'
 #  :path => '../streamio-ffmpeg'
 
 gem 'haml', '~> 3.1'
@@ -40,3 +37,7 @@ gem 'kaminari'
 # group :development, :test do
 #   gem 'webrat'
 # end
+
+group :test do
+  gem 'shoulda', '~>3.0.0.beta2'
+end
