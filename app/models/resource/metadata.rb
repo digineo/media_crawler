@@ -1,6 +1,15 @@
 module Resource::Metadata
   extend ActiveSupport::Concern
   
+  RESOLUTIONS = [
+    ["4320p", 7680, 4320],
+    ["1080p", 1080, 1920],
+    ["720p",   720, 1280],
+    ["480p",   480,  640],
+    ["360p",   360,  240],
+    ["240p",   240,  160]
+  ]
+  
   included do
     before_create :update_size
     before_create :update_metadata
@@ -59,8 +68,16 @@ module Resource::Metadata
       metadata.width
     end
     
+    def width_height
+      "#{width}x#{height}"
+    end
+    
     def resolution
-      "#{height}x#{width}"
+      return "unknown" if !width || !height
+      for res in RESOLUTIONS
+        return res[0] if width >= res[1]*0.95 || height >= res[2]*0.95
+      end
+      "unknown"
     end
   end
   
