@@ -56,8 +56,11 @@ class ResourcesController < ApplicationController
       end
       
       facet :duration do
-        row 0..60 do
-          with :duration, 0..60
+        row 0..20 do
+          with :duration, 0..20
+        end
+        row 21..60 do
+          with :duration, 21..60
         end
         row 61..120 do
           with :duration, 61..120
