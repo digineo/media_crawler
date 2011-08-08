@@ -13,6 +13,7 @@ module Resource::Search
       string :audio_languages, :multiple => true
       string :subtitle_languages, :multiple => true
       string :video_codec
+      string :resolution
       integer :height
       integer :width
     end

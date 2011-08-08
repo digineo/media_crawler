@@ -14,7 +14,7 @@ class ResourcesController < ApplicationController
       key = key.to_sym
       
       case key
-        when :audio_channels
+        when :audio_channels, :resolution
           @filters[key] = value
         when :duration
           min, max = value.include?("-") ? value.split("-") : value.split("..")
@@ -34,6 +34,7 @@ class ResourcesController < ApplicationController
     duration_max    = @filters[:duration_max]
     
     facets = {
+      :resolution         => @filters[:resolution],
       :video_codec        => @filters[:video_codec],
       :audio_channels     => @filters[:audio_channels],
       :audio_languages    => @filters[:audio_language],

@@ -14,7 +14,9 @@
   %dt Video-Codec
   %dd= resource.video_codec
   %dt Resolution
-  %dd= resource.resolution
+  %dd
+    = resource.resolution
+    (#{resource.width_height})
   %dt Subtitles
   %dd= resource.subtitle_languages.join(", ")
 
