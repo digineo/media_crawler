@@ -1,4 +1,4 @@
-VideoCrawler::Application.routes.draw do
+MediaCrawler::Application.routes.draw do
   
   resources :resources
 
