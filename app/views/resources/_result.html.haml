@@ -1,9 +1,10 @@
 
 %h3
-  - if hit.highlight(:path)
-    = hit.highlight(:path).format { |word| "<span class=\"highlight\">#{h word}</span>" }.html_safe
-  - else
-    = resource.path
+  %a{:href => resource.uri}
+    - if hit.highlight(:path)
+      = hit.highlight(:path).format { |word| "<span class=\"highlight\">#{h word}</span>" }.html_safe
+    - else
+      = resource.path
 
 %pre= #resource.metadata.to_yaml
 %dl
@@ -13,14 +14,20 @@
   %dd= number_to_human_size(resource.size) || '-'
   %dt Duration
   %dd #{format_resolution(resource.duration)} h
-  %dt Video-Codec
-  %dd= resource.video_codec
-  %dt Resolution
-  %dd
-    = resource.resolution
-    %small (#{resource.width_height})
-  %dt Subtitles
-  %dd= resource.subtitle_languages.join(", ")
+  
+  - if resource.video_codec
+    %dt Video-Codec
+    %dd= resource.video_codec
+  
+  - if resource.resolution
+    %dt Resolution
+    %dd
+      = resource.resolution
+      %small (#{resource.width_height})
+  
+  - if resource.subtitle_languages.any?
+    %dt Subtitles
+    %dd= resource.subtitle_languages.join(", ")
 
 - audio_streams = resource.audio_streams
 = render :partial => 'audio_streams', :locals => {:audio_streams => audio_streams} if audio_streams.any?
