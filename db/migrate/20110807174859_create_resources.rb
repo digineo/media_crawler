@@ -3,7 +3,7 @@ class CreateResources < ActiveRecord::Migration
     create_table :resources do |t|
       t.references :server, :null => false
       t.string :path, :null => false
-      t.column :size, 'bigint unsigned'
+      t.column :filesize, 'bigint unsigned'
       t.text :metadata
 
       t.timestamps :null => false

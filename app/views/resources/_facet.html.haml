@@ -1,6 +1,6 @@
 .facet
   %h3
-    = title
+    = param.to_s.humanize.pluralize
     = remove_filter_link param
   %ul
     - for row in collection.facet(field).rows

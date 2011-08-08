@@ -3,7 +3,7 @@ module Resource::Search
   
   included do
     searchable do
-      text :path, :as => :path_tpath
+      text :path, :as => 'path_tpath'
       integer :server_id
       integer :duration
       string :audio_codecs, :multiple => true
@@ -12,6 +12,7 @@ module Resource::Search
       string :subtitle_languages, :multiple => true
       string :video_codec
       string :resolution
+      integer :filesize, :as => 'filesize_l'
       integer :height
       integer :width
     end
