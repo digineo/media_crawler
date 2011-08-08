@@ -14,7 +14,9 @@ gem 'haml', '~> 3.1'
 gem 'sass', '~> 3.1'
 gem 'inherited_resources'
 
-gem 'sunspot_rails'
+gem 'sunspot_rails', :git => 'git://github.com/outoftime/sunspot.git'
+gem 'kaminari'
+
 
 # Use unicorn as the web server
 # gem 'unicorn'
