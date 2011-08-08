@@ -3,9 +3,7 @@ module Resource::Search
   
   included do
     searchable do
-      text :path, :stored => true do
-        normalized_path
-      end
+      text :path, :as => :path_tpath
       integer :server_id
       integer :duration
       string :audio_codecs, :multiple => true
@@ -16,12 +14,6 @@ module Resource::Search
       string :resolution
       integer :height
       integer :width
-    end
-  end
-  
-  module InstanceMethods
-    def normalized_path
-      path.gsub("/"," / ").gsub("."," . ").gsub("-"," - ")
     end
   end
   
