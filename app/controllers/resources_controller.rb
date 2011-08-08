@@ -8,29 +8,8 @@ class ResourcesController < ApplicationController
   protected
   
   def collection
-    query = params[:query].to_s.dup
-    
-    @filters = {}
-    
-    query.gsub!(Resource::FIELD_PATTERN) do |expr|
-      key, value = expr.split(":",2)
-      key = key.to_sym
-      
-      case key
-        when :audio_channels, :resolution
-          @filters[key] = value
-        when :duration
-          min, max = value.include?("-") ? value.split("-") : value.split("..")
-          @filters[key] = parse_duration(min)..parse_duration(max)
-        when :duration_min, :duration_max
-          @filters[key] = parse_duration(value)
-        when :video_codec, :audio_codec, :audio_language, :subtitle_language
-          @filters[key] ||= []
-          @filters[key] += value.include?(",") ? value.split(",") : [value.to_s]
-      end
-      
-      nil
-    end
+    @filters  = SearchFilters.new(params[:query].to_s)
+    remaining = @filters.remaining
     
     duration        = @filters[:duration]
     duration_min    = @filters[:duration_min]
@@ -38,6 +17,7 @@ class ResourcesController < ApplicationController
     
     facets = {
       :resolution         => @filters[:resolution],
+      :filesize           => @filters[:filesize],
       :video_codec        => @filters[:video_codec],
       :audio_channels     => @filters[:audio_channels],
       :audio_languages    => @filters[:audio_language],
@@ -50,7 +30,7 @@ class ResourcesController < ApplicationController
       
       paginate(:page => params[:page], :per_page => per_page)
       
-      keywords query do
+      keywords remaining do
         highlight :path
       end
       
@@ -61,6 +41,24 @@ class ResourcesController < ApplicationController
       for field, value in facets
         filter = with(field, value) unless value.blank?
         facet field, :exclude => filter
+      end
+      
+      facet :filesize do
+        row "0..10m" do
+          with :filesize, 0..(10.megabytes)
+        end
+        row "10m..100m" do
+          with :filesize, (10.megabytes)..(100.megabytes)
+        end
+        row "100m..1g" do
+          with :filesize, (100.megabytes)...(1.gigabyte)
+        end
+        row "1g..10g" do
+          with :filesize, (1.gigabyte)..(10.gigabytes)
+        end
+        row "10g..100g" do
+          with :filesize, (10.gigabytes)..(100.gigabytes)
+        end
       end
       
       facet :duration do
@@ -87,13 +85,5 @@ class ResourcesController < ApplicationController
     [per_page, PAGELEN_MAX].min
   end
   
-  def parse_duration(value)
-    if value.include?(":")
-      h, m = value.split(":")
-      h.to_i * 60 + m.to_i
-    else
-      value.to_i
-    end
-  end
   
 end

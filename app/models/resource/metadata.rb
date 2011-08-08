@@ -11,7 +11,7 @@ module Resource::Metadata
   ]
   
   included do
-    before_create :update_size
+    before_create :update_filesize
     before_create :update_metadata
     
     serialize :metadata
@@ -19,8 +19,8 @@ module Resource::Metadata
   
   module InstanceMethods
     
-    def update_size
-      self.size = File.stat(path).size
+    def update_filesize
+      self.filesize = File.stat(path).size
     end
     
     def update_metadata

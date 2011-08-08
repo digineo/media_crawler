@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(:version => 20110807174859) do
   create_table "resources", :force => true do |t|
     t.integer  "server_id",               :null => false
     t.string   "path",                    :null => false
-    t.integer  "size",       :limit => 8
+    t.integer  "filesize",   :limit => 8
     t.text     "metadata"
     t.datetime "created_at",              :null => false
     t.datetime "updated_at",              :null => false

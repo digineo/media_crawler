@@ -14,7 +14,6 @@ server = Server.find(1)
 $stdin.each_line do |path|
   path.strip!
   server.resources.create! \
-    :path => path,
-    :size => File.size(path)
+    :path => path
 end
 

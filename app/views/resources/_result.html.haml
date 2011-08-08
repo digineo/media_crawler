@@ -11,7 +11,7 @@
   %dt ID
   %dd= resource.id
   %dt Size
-  %dd= number_to_human_size(resource.size) || '-'
+  %dd= number_to_human_size(resource.filesize) || '-'
   %dt Duration
   %dd #{format_resolution(resource.duration)} h
   

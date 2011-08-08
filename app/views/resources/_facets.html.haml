@@ -1,3 +1,5 @@
+= render_facet :filesize
+
 .facet
   %h3
     Duration
@@ -7,8 +9,8 @@
       %li
         = facet_link :duration, row, t(row.value.to_s.sub("..","-"), :scope => 'facets.duration')
 
-= render :partial => 'facet', :locals => {:title => 'Resolution', :param => :resolution, :field => :resolution}
-= render :partial => 'facet', :locals => {:title => 'Video Codecs', :param => :video_codec, :field => :video_codec}
-= render :partial => 'facet', :locals => {:title => 'Audio Languages', :param => :audio_language, :field => :audio_languages}
-= render :partial => 'facet', :locals => {:title => 'Audio Channels', :param => :audio_channels, :field => :audio_channels}
-= render :partial => 'facet', :locals => {:title => 'Subtitle Languages', :param => :subtitle_language, :field => :subtitle_languages}
+= render_facet :resolution
+= render_facet :video_codec
+= render_facet :audio_language, :audio_languages
+= render_facet :audio_channels
+= render_facet :subtitle_language, :subtitle_languages
