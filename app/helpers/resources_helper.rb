@@ -28,7 +28,7 @@ module ResourcesHelper
       query << " #{field}:#{value}"
     end
     
-    params.merge(:query => query.strip)
+    params.merge(:query => query.strip, :page => nil)
   end
   
   def check_box_group_tag(name, values)
