@@ -1,4 +1,8 @@
 #!/usr/bin/env ruby
+# 
+# import all you mkv-files:
+#  find /media/bigvolume/ -name '*.mkv' | script/import_files
+# 
 
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/environment',  __FILE__)
@@ -8,6 +12,9 @@ server = Server.find(1)
 
 # read file list from stdin
 $stdin.each_line do |path|
-  server.resources.create! :path => path.strip
+  path.strip!
+  server.resources.create! \
+    :path => path,
+    :size => File.size(path)
 end
 
