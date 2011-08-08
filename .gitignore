@@ -3,5 +3,6 @@
 /db/*.sqlite3
 /log
 /solr/data
+/solr/pids
 /tmp
 *.css
