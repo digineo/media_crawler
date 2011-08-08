@@ -9,6 +9,8 @@
 %dl
   %dt ID
   %dd= resource.id
+  %dt Size
+  %dd= number_to_human_size(resource.size) || '-'
   %dt Duration
   %dd #{format_resolution(resource.duration)} h
   %dt Video-Codec
@@ -16,7 +18,7 @@
   %dt Resolution
   %dd
     = resource.resolution
-    (#{resource.width_height})
+    %small (#{resource.width_height})
   %dt Subtitles
   %dd= resource.subtitle_languages.join(", ")
 

@@ -3,10 +3,14 @@ class CreateResources < ActiveRecord::Migration
     create_table :resources do |t|
       t.references :server, :null => false
       t.string :path, :null => false
-      t.integer :size, :null => false
+      t.column :size, 'bigint unsigned'
       t.text :metadata
 
       t.timestamps :null => false
+    end
+    
+    change_table :resources do |t|
+      t.index [:server_id, :path]
     end
   end
 
