@@ -1,0 +1,14 @@
+.group
+  %h3
+    Duration
+    = remove_filter_link :duration
+  %ul
+    - for row in collection.facet(:duration).rows
+      %li
+        = facet_link :duration, row, t(row.value.to_s.sub("..","-"), :scope => 'facets.duration')
+
+
+= render :partial => 'facet', :locals => {:title => 'Video Codecs', :param => :video_codec, :field => :video_codec}
+= render :partial => 'facet', :locals => {:title => 'Audio Languages', :param => :audio_language, :field => :audio_languages}
+= render :partial => 'facet', :locals => {:title => 'Audio Channels', :param => :audio_channels, :field => :audio_channels}
+= render :partial => 'facet', :locals => {:title => 'Subtitle Languages', :param => :subtitle_language, :field => :subtitle_languages}

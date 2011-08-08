@@ -4,4 +4,4 @@
 require File.expand_path('../config/application', __FILE__)
 require 'rake'
 
-Mediacrawler::Application.load_tasks
+VideoCrawler::Application.load_tasks

@@ -1,0 +1,37 @@
+
+%h3
+  - if hit.highlight(:path)
+    = hit.highlight(:path).format { |word| "<span class=\"highlight\">#{h word}</span>" }.html_safe
+  - else
+    = resource.path
+
+%pre= #resource.metadata.to_yaml
+%dl
+  %dt ID
+  %dd= resource.id
+  %dt Duration
+  %dd #{format_resolution(resource.duration)} h
+  %dt Video-Codec
+  %dd= resource.video_codec
+  %dt Resolution
+  %dd= resource.resolution
+  %dt Subtitles
+  %dd= resource.subtitle_languages.join(", ")
+
+- audio_streams = resource.audio_streams
+- if audio_streams.any?
+  %table
+    %thead
+      %tr
+        %th Language
+        %th Codec
+        %th Channels
+        %th Bitrate
+        %th Sample Rate
+    - audio_streams.each do |stream|
+      %tr
+        %td= stream.language
+        %td= stream.codec
+        %td= stream.channels
+        %td= stream.bitrate || '-'
+        %td= stream.sample_rate
