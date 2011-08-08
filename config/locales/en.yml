@@ -4,6 +4,7 @@
 en:
   facets:
     duration:
-      "0-60": up to 1 hour
+      "0-20": up to 20 min.
+      "21-60": 21 min. to 1 hour
       "61-120": 1-2 hours
       "121-999": more than 2 hours
