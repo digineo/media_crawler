@@ -21,19 +21,4 @@
   %dd= resource.subtitle_languages.join(", ")
 
 - audio_streams = resource.audio_streams
-- if audio_streams.any?
-  %table
-    %thead
-      %tr
-        %th Language
-        %th Codec
-        %th Channels
-        %th Bitrate
-        %th Sample Rate
-    - audio_streams.each do |stream|
-      %tr
-        %td= stream.language
-        %td= stream.codec
-        %td= stream.channels
-        %td= stream.bitrate || '-'
-        %td= stream.sample_rate
+= render :partial => 'audio_streams', :locals => {:audio_streams => audio_streams} if audio_streams.any?
