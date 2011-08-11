@@ -2,4 +2,5 @@
   %label{:for => :query_input} Query
   = text_field_tag :query, params[:query], :id => 'query_input', :placeholder => 'your search term'
   = submit_tag 'Search', :name => nil
-  = link_to "[?]", :usage, :title => 'check out the usage'
+  = link_to "[Usage]", :usage, :title => 'check out the usage'
+  = link_to "[Servers]", :servers
