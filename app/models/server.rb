@@ -9,7 +9,11 @@ class Server < ActiveRecord::Base
     dir  = "#{Rails.root}/data/servers/#{id}"
     file = "#{dir}/filelist"
     `mkdir -p '#{dir}'`
-    `lftp '#{host_ftp}' -e "du -a" > #{file}`
+    `lftp '#{host_ftp}' -e '
+    set net:max-retries 2;
+    set net:reconnect-interval-base 5;
+    set net:reconnect-interval-max 15;
+    du -a' > #{file}`
     
     files_count = 0
     f = File.open(file, "r") 
