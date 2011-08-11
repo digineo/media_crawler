@@ -32,8 +32,13 @@ ActiveRecord::Schema.define(:version => 20110807174859) do
     t.string   "uri_ftp"
     t.string   "uri_http"
     t.string   "uri_samba"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.string   "state",      :default => "pending", :null => false
+    t.datetime "checked_at"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
   end
+
+  add_index "servers", ["checked_at"], :name => "index_servers_on_checked_at"
+  add_index "servers", ["state"], :name => "index_servers_on_state"
 
 end

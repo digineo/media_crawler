@@ -1,4 +1,7 @@
 %tr
+  %td= server.id
   %td= link_to server.uri_ftp, server.uri_ftp
   %td.right= server.resources.count
   %td.right= server.resources.indexed.count
+  %td= server.state
+  %td= server.checked_at? ? "#{time_ago_in_words(server.checked_at)} ago" : 'never'
