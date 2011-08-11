@@ -13,7 +13,8 @@ class Server < ActiveRecord::Base
     set net:max-retries 2;
     set net:reconnect-interval-base 5;
     set net:reconnect-interval-max 15;
-    du -a' > #{file}`
+    du -a;
+    quit' > #{file}`
     
     files_count = 0
     f = File.open(file, "r") 
