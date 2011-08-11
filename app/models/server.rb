@@ -4,25 +4,44 @@ class Server < ActiveRecord::Base
   
   has_many :resources
   
+  def filelist_path
+    "#{Rails.root}/data/servers/#{id}/filelist"
+  end
+  
   def update_files
-    now  = Time.now
-    dir  = "#{Rails.root}/data/servers/#{id}"
-    file = "#{dir}/filelist"
-    `mkdir -p '#{dir}'`
+    download_filelist
+    parse_filelist
+  end
+  
+  # does the filelist exists?
+  def filelist?
+    File.exists?(filelist_path) && filelist_size > 0
+  end
+  
+  def filelist_size
+    File.size(filelist_path)
+  end
+  
+  def download_filelist
+    `mkdir -p '#{File.dirname(filelist_path)}'`
     `lftp '#{host_ftp}' -e '
     set net:max-retries 2;
     set net:reconnect-interval-base 5;
     set net:reconnect-interval-max 15;
     du -a;
-    quit' > #{file}`
-    
+    quit' > #{filelist_path}`
+  end
+  
+  def parse_filelist
+    now         = Time.now
     files_count = 0
-    f = File.open(file, "r") 
+    
+    f = File.open(filelist_path, "r") 
     f.each_line do |line|
       cols = line.strip.split("\t")
       size = cols[0]
       path = cols[1]
-      path = path[1..-1] if path.starts_with?(".")
+      path = path[1..-1] if path.to_s.starts_with?(".")
       
       # check file pattern
       next unless Resource::FILE_PATTERN =~ path
