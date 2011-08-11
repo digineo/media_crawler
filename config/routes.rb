@@ -1,6 +1,7 @@
 MediaCrawler::Application.routes.draw do
   
   resources :resources
+  resources :servers, :only => [:index]
   
   match 'usage' => 'static#usage'
   

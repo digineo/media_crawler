@@ -11,8 +11,6 @@ module Resource::Metadata
   ]
   
   included do
-    scope :non_indexed, where(:indexed => false)
-    
     serialize :metadata
   end
   
