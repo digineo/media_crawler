@@ -47,6 +47,10 @@ class Server < ActiveRecord::Base
     ensure
       ftp.close
     end
+    
+    self.checked_at = Time.now
+    self.state = 'up'
+    save!
   end
   
   def host_ftp
