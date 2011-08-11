@@ -1,5 +1,6 @@
 /.bundle
 /.project
+/data
 /db/*.sqlite3
 /log
 /solr/data
