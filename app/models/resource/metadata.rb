@@ -18,12 +18,8 @@ module Resource::Metadata
   
   module InstanceMethods
     
-    def update_filesize
-      self.filesize = File.stat(path).size
-    end
-    
     def update_metadata
-      self.metadata = FFMPEG::Movie.new(path)
+      self.metadata = FFMPEG::Movie.new(chunk_path)
       self.indexed  = true
       self.save! unless new_record?
       solr_index!

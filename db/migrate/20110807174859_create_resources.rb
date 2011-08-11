@@ -11,7 +11,8 @@ class CreateResources < ActiveRecord::Migration
     end
     
     change_table :resources do |t|
-      t.index [:server_id, :path]
+      t.index [:server_id, :path], :unique => true
+      t.index [:server_id, :indexed]
       t.index [:server_id, :last_seen_at]
     end
   end

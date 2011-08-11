@@ -23,8 +23,9 @@ ActiveRecord::Schema.define(:version => 20110807174859) do
     t.datetime "updated_at",                                   :null => false
   end
 
+  add_index "resources", ["server_id", "indexed"], :name => "index_resources_on_server_id_and_indexed"
   add_index "resources", ["server_id", "last_seen_at"], :name => "index_resources_on_server_id_and_last_seen_at"
-  add_index "resources", ["server_id", "path"], :name => "index_resources_on_server_id_and_path"
+  add_index "resources", ["server_id", "path"], :name => "index_resources_on_server_id_and_path", :unique => true
 
   create_table "servers", :force => true do |t|
     t.string   "name"
