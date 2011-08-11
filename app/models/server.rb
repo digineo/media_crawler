@@ -45,8 +45,12 @@ class Server < ActiveRecord::Base
     begin
       ftp.login
       resources.non_indexed.find_each do |resource|
-        resource.download_chunk(ftp)
-        resource.update_metadata
+        begin
+          resource.download_chunk(ftp)
+          resource.update_metadata
+        rescue Net::FTPPermError => e
+          puts "#{resource.id} #{resource.path}: #{e.message}"
+        end
       end
     ensure
       ftp.close
