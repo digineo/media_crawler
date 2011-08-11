@@ -12,7 +12,7 @@ class Resource < ActiveRecord::Base
   include Resource::Search
   
   def uri
-    "#{path}"
+    server.uri_ftp + path[1..-1]
   end
   
   def chunk_path
@@ -21,19 +21,24 @@ class Resource < ActiveRecord::Base
   
   def download_chunk(ftp)
     `mkdir -p '#{File.dirname(chunk_path)}'`
-    
-    conn = ftp.send :transfercmd, "RETR " << path
+    retried = false
     begin
-      data = conn.read(CHUNK_SIZE)
-      # puts "#{data.length} bytes read"
-      File.open(chunk_path, 'wb') do |f|
-        f.write(data)
+      conn    = ftp.send :transfercmd, "RETR " << path
+      
+      begin
+        data = conn.read(CHUNK_SIZE)
+        # puts "#{data.length} bytes read"
+        File.open(chunk_path, 'wb') do |f|
+          f.write(data)
+        end
+      ensure
+        conn.close
       end
-    ensure
-      conn.close
+    rescue Net::FTPTempError => e
+      raise e if retried
+      retried = true
+      retry
     end
-  rescue Net::FTPTempError
-    # no problem
   end
   
 end
