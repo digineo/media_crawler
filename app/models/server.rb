@@ -28,7 +28,7 @@ class Server < ActiveRecord::Base
       
       # create/update resource
       resource = resources.find_or_initialize_by_path(path)
-      resource.filesize = size
+      resource.filesize = size*1024
       resource.last_seen_at = now
       resource.save!
       
