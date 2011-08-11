@@ -11,8 +11,7 @@ module Resource::Metadata
   ]
   
   included do
-    before_create :update_filesize
-    before_create :update_metadata
+    scope :non_indexed, where(:indexed => false)
     
     serialize :metadata
   end
@@ -25,7 +24,9 @@ module Resource::Metadata
     
     def update_metadata
       self.metadata = FFMPEG::Movie.new(path)
+      self.indexed  = true
       self.save! unless new_record?
+      solr_index!
     end
     
     def audio_streams

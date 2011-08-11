@@ -2,7 +2,7 @@ module Resource::Search
   extend ActiveSupport::Concern
   
   included do
-    searchable do
+    searchable :auto_index => false do
       text :path, :as => 'path_tpath'
       integer :server_id
       integer :duration

@@ -13,14 +13,17 @@
 ActiveRecord::Schema.define(:version => 20110807174859) do
 
   create_table "resources", :force => true do |t|
-    t.integer  "server_id",               :null => false
-    t.string   "path",                    :null => false
-    t.integer  "filesize",   :limit => 8
+    t.integer  "server_id",                                    :null => false
+    t.string   "path",                                         :null => false
+    t.integer  "filesize",     :limit => 8
+    t.boolean  "indexed",                   :default => false, :null => false
     t.text     "metadata"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
+    t.datetime "last_seen_at"
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
   end
 
+  add_index "resources", ["server_id", "last_seen_at"], :name => "index_resources_on_server_id_and_last_seen_at"
   add_index "resources", ["server_id", "path"], :name => "index_resources_on_server_id_and_path"
 
   create_table "servers", :force => true do |t|
