@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/digineo/streamio-ffmpeg.git
-  revision: 0732e580f1b8013876d7e8049ada80ef632f2282
+  revision: 0a2bb1a1913647d8c7ba0165743d4e379bd5abb8
   specs:
     streamio-ffmpeg (0.9.0)
 
