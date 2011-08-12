@@ -1,4 +1,5 @@
 require "net/ftp"
+require "timeout"
 
 class Server < ActiveRecord::Base
   
@@ -61,9 +62,17 @@ class Server < ActiveRecord::Base
   end
   
   def update_metadata
-    ftp = Net::FTP.new(host_ftp)
+    ftp = nil
+    
+    # connect
+    Timeout::timeout(15) {
+      ftp = Net::FTP.new(host_ftp)
+    }
     begin
+      # login
       ftp.login
+      
+      # index non-indexed resources
       resources.non_indexed.find_each do |resource|
         begin
           resource.download_chunk(ftp)
