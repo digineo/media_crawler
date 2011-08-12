@@ -19,6 +19,7 @@ module Resource::Metadata
     def update_metadata
       self.metadata = FFMPEG::Movie.new(chunk_path)
       self.indexed  = true
+      self.update_checksum
       self.save! unless new_record?
       solr_index!
     end

@@ -12,6 +12,7 @@ module Resource::Search
       string :subtitle_languages, :multiple => true
       string :video_codec
       string :resolution
+      string :checksum
       integer :filesize, :as => 'filesize_l'
       integer :height
       integer :width
