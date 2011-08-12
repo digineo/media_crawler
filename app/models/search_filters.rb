@@ -11,7 +11,7 @@ class SearchFilters
       key = key.to_sym
       
       case key
-        when :audio_channels, :resolution
+        when :audio_channels, :resolution, :server_id
           @filters[key] = value
         when :filesize
           min, max = value.include?("-") ? value.split("-") : value.split("..")
