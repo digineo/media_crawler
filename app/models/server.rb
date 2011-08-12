@@ -10,8 +10,7 @@ class Server < ActiveRecord::Base
   end
   
   def update_files
-    download_filelist
-    parse_filelist
+    download_filelist && parse_filelist
   end
   
   # does the filelist exists?
@@ -26,11 +25,13 @@ class Server < ActiveRecord::Base
   def download_filelist
     `mkdir -p '#{File.dirname(filelist_path)}'`
     `lftp '#{host_ftp}' -e '
-    set net:max-retries 2;
+    set net:max-retries 3;
     set net:reconnect-interval-base 5;
     set net:reconnect-interval-max 15;
+    set net:timeout 10;
     du -a;
     quit' > #{filelist_path}`
+    $?.to_i == 0
   end
   
   def parse_filelist
