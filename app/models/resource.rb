@@ -9,6 +9,7 @@ class Resource < ActiveRecord::Base
   include Resource::Metadata
   include Resource::Search
   include Resource::Chunk
+  include Resource::Checksum
   
   scope :indexed, where(:indexed => true)
   scope :non_indexed, where(:indexed => false)
