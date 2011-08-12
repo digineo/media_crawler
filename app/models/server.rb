@@ -59,6 +59,11 @@ class Server < ActiveRecord::Base
     
     f.close
     
+    # delete outdated resources
+    resources.find_each(:conditions => ["last_seen_at IS null OR last_seen_at < ?", now]) do |r|
+      r.destroy
+    end
+    
     files_count
   end
   
