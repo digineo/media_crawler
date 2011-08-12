@@ -11,6 +11,7 @@ class ResourcesController < ApplicationController
     @filters  = SearchFilters.new(params[:query].to_s)
     remaining = @filters.remaining
     
+    server_id       = @filters[:server_id]
     duration        = @filters[:duration]
     duration_min    = @filters[:duration_min]
     duration_max    = @filters[:duration_max]
@@ -33,6 +34,8 @@ class ResourcesController < ApplicationController
       keywords remaining do
         highlight :path
       end
+      
+      with(:server_id, server_id) unless server_id.blank?
       
       with(:duration).between(duration) unless duration.blank?
       with(:duration).greater_than(duration_min) unless duration_min.blank?
