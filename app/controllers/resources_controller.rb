@@ -26,7 +26,7 @@ class ResourcesController < ApplicationController
     
     
     
-    @resources ||= resource_class.search do
+    @resources ||= resource_class.search :include => [:server] do
       
       paginate(:page => params[:page], :per_page => per_page)
       
