@@ -10,7 +10,7 @@ class Server < ActiveRecord::Base
   end
   
   def update_all
-    server.update_state!
+    update_state!
     if up?
       update_files && update_metadata
     end
