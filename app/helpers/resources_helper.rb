@@ -1,5 +1,14 @@
 module ResourcesHelper
   
+  def format_highlight(hit, field)
+    highlight = hit.highlight(field)
+    if highlight
+      highlight.format { |word| "<span class=\"highlight\">#{h word}</span>" }.html_safe
+    else
+      hit.result.send field
+    end
+  end
+  
   def format_resolution(value)
     sprintf "%d:%02d", value/60, value%60
   end

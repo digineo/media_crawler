@@ -32,7 +32,7 @@ class ResourcesController < ApplicationController
       paginate(:page => params[:page], :per_page => per_page)
       
       keywords remaining do
-        highlight :path
+        highlight :path_without_filename, :filename
       end
       
       with(:server_id, server_id) unless server_id.blank?

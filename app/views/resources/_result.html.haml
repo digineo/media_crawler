@@ -1,11 +1,9 @@
+%a.path{:href => resource.server.uri_ftp.sub(%r(/$),'') << resource.path_without_filename << "/" }
+  = (h(resource.server.uri_ftp.sub(%r(/$),'')) << format_highlight(hit, :path_without_filename) << '/').html_safe
 
 %h3
   %a{:href => resource.uri}
-    - if hit.highlight(:path)
-      = resource.server.uri_ftp.sub(%r(/$),'')
-      = hit.highlight(:path).format { |word| "<span class=\"highlight\">#{h word}</span>" }.html_safe
-    - else
-      = resource.uri
+    = format_highlight hit, :filename
 
 %pre= #resource.metadata.to_yaml
 %dl
