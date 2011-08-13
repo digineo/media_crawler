@@ -1,13 +1,7 @@
 module Maintenance
   
   def self.update_all
-    Server.order("files_updated_at").find_each do |server|
-      server.update_state!
-      if server.up?
-        
-        server.update_files && server.update_metadata
-      end
-    end
+    Server.order("files_updated_at").find_each(&:update_all)
   end
   
   def self.update_files
