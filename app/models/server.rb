@@ -9,10 +9,18 @@ class Server < ActiveRecord::Base
     "#{Rails.root}/data/servers/#{id}/filelist"
   end
   
+  def update_all
+    server.update_state!
+    if up?
+      update_files && update_metadata
+    end
+  end
+  
   def update_files
     if download_filelist && parse_filelist
       self.files_updated_at = Time.now
       save!
+      true
     end
   end
   
@@ -34,7 +42,13 @@ class Server < ActiveRecord::Base
     set net:timeout 10;
     du -a;
     quit' > #{filelist_path}`
-    $?.to_i == 0
+    
+    # does not work properly
+    #$?.to_i == 0
+    
+    # check if last line does contain the summarized size
+    line = `tail -n 1 #{filelist_path}`.strip
+    line =~ /^\d+\t\.$/
   end
   
   def parse_filelist
