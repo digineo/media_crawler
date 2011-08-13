@@ -10,7 +10,10 @@ class Server < ActiveRecord::Base
   end
   
   def update_files
-    download_filelist && parse_filelist
+    if download_filelist && parse_filelist
+      self.files_updated_at = Time.now
+      save!
+    end
   end
   
   # does the filelist exists?
@@ -91,9 +94,23 @@ class Server < ActiveRecord::Base
       ftp.close
     end
     
-    self.checked_at = Time.now
-    self.state = 'up'
+    self.metadata_updated_at = Time.now
     save!
+  end
+  
+  def update_state!
+    `ping -c 1 -w 5 #{host_ftp}`
+    self.state      = $?.to_i==0 ? 'up' : 'down'
+    self.checked_at = Time.now
+    save!
+  end
+  
+  def up?
+    state=='up'
+  end
+  
+  def down?
+    state=='down'
   end
   
   def host_ftp

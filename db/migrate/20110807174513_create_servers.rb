@@ -7,13 +7,18 @@ class CreateServers < ActiveRecord::Migration
         :uri_http,
         :uri_samba
       t.string :state, :null => false, :default => 'pending'
-      t.datetime :checked_at
+      t.datetime \
+        :checked_at,
+        :files_updated_at,
+        :metadata_updated_at
       t.timestamps :null => false
     end
     
     change_table :servers do |t|
       t.index :state
       t.index :checked_at
+      t.index :files_updated_at
+      t.index :metadata_updated_at
     end
   end
 

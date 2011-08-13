@@ -17,12 +17,14 @@ ActiveRecord::Schema.define(:version => 20110807174859) do
     t.string   "path",                                         :null => false
     t.integer  "filesize",     :limit => 8
     t.boolean  "indexed",                   :default => false, :null => false
+    t.string   "checksum"
     t.text     "metadata"
     t.datetime "last_seen_at"
     t.datetime "created_at",                                   :null => false
     t.datetime "updated_at",                                   :null => false
   end
 
+  add_index "resources", ["server_id", "checksum"], :name => "index_resources_on_server_id_and_checksum"
   add_index "resources", ["server_id", "indexed"], :name => "index_resources_on_server_id_and_indexed"
   add_index "resources", ["server_id", "last_seen_at"], :name => "index_resources_on_server_id_and_last_seen_at"
   add_index "resources", ["server_id", "path"], :name => "index_resources_on_server_id_and_path", :unique => true
@@ -32,13 +34,17 @@ ActiveRecord::Schema.define(:version => 20110807174859) do
     t.string   "uri_ftp"
     t.string   "uri_http"
     t.string   "uri_samba"
-    t.string   "state",      :default => "pending", :null => false
+    t.string   "state",               :default => "pending", :null => false
     t.datetime "checked_at"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.datetime "files_updated_at"
+    t.datetime "metadata_updated_at"
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
   end
 
   add_index "servers", ["checked_at"], :name => "index_servers_on_checked_at"
+  add_index "servers", ["files_updated_at"], :name => "index_servers_on_files_updated_at"
+  add_index "servers", ["metadata_updated_at"], :name => "index_servers_on_metadata_updated_at"
   add_index "servers", ["state"], :name => "index_servers_on_state"
 
 end
