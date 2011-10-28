@@ -9,14 +9,13 @@ Actually only FTP servers are supported.
 Installation
 ------------
 
-It is recommended to install 1.9.2 using [RVM](http://beginrescueend.com/).
+It is recommended to install 1.9.2 using [RVM](http://beginrescueend.com/), if you do not want to use RVM install the ruby packages:
 
-On Debian/Ubuntu you need to install the following packages:
+    (sudo) apt-get install ruby1.8-dev ruby1.8 ri1.8 rdoc1.8 irb1.8 libreadline-ruby1.8 libruby1.8 libopenssl-ruby rake rubygems
 
-    (sudo) apt-get install ruby1.8-dev ruby1.8 ri1.8 rdoc1.8 irb1.8
-    (sudo) apt-get install libreadline-ruby1.8 libruby1.8 libopenssl-ruby
-    (sudo) apt-get install libxslt-dev libxml2-dev
-    (sudo) apt-get install mysql-server libmysqlclient-dev ffmpeg lftp rake rubygems
+On Debian/Ubuntu you also need to install the following packages:
+
+    (sudo) apt-get install mysql-server libmysqlclient-dev ffmpeg lftp libxslt-dev libxml2-dev
 
 Clone this repository:
 
@@ -25,9 +24,8 @@ Clone this repository:
 Now change into the directory and install the required gems:
 
     cd media_crawler
-    (sudo) gem install nokogiri
-    (sudo) gem install bundler
-    (sudo) bundle install
+    gem install bundler
+    bundle install
 
 Then prepare the database. If you want to modify the database configuration, just edit the `config/database.yml`.
 
