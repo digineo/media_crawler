@@ -13,7 +13,7 @@ It is recommended to install 1.9.2 using [RVM](http://beginrescueend.com/).
 
 On Debian/Ubuntu you need to install the following packages:
 
-    (sudo) apt-get install mysql-server ffmpeg lftp
+    (sudo) apt-get install mysql-server ffmpeg lftp rake rubygems
 
 Clone this repository:
 
@@ -22,7 +22,7 @@ Clone this repository:
 Now change into the directory and install the required gems:
 
     cd media_crawler
-    gem install bundler
+    (sudo) gem install bundler
     bundle install
 
 Then prepare the database. If you want to modify the database configuration, just edit the `config/database.yml`.
