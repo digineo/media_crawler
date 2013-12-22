@@ -9,9 +9,9 @@ Actually only FTP servers are supported.
 Installation
 ------------
 
-It is recommended to install 1.9.2 using [RVM](http://beginrescueend.com/), if you do not want to use RVM install the ruby packages:
+It is recommended to install Ruby 2.0 using [RVM](http://rvm.io/):
 
-    (sudo) apt-get install ruby1.8-dev ruby1.8 ri1.8 rdoc1.8 irb1.8 libreadline-ruby1.8 libruby1.8 libopenssl-ruby rake rubygems
+    (sudo) curl -L https://get.rvm.io | bash -s stable --ruby
 
 On Debian/Ubuntu you also need to install the following packages:
 
@@ -73,7 +73,7 @@ Just take a look at the maintenance methods in `app/models/maintenance.rb'. To c
 Credits and License
 -------------------
 
-(c) 2011 Digineo GmbH, released under the AGPL v3 (GNU Affero General Public License Version 3)
+(c) 2011-2013 Digineo GmbH, released under the AGPL v3 (GNU Affero General Public License Version 3)
 
 Please feel free to fork and improve this great piece of software :-)
 
