@@ -8,4 +8,3 @@
 
 Server.create! \
   :name => 'my local computer'
-
