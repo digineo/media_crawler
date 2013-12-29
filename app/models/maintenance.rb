@@ -22,8 +22,8 @@ module Maintenance
   def self.import_servers_from_uri(uri)
     uri  = URI.parse(uri) if uri.is_a?(String)
     page = Net::HTTP.get(uri)
-    page.scan(%r(ftp://([\d.]+)/)).each do |address|
-      Server.find_or_create_by_uri_ftp("ftp://#{address[0]}/")
+    page.scan(%r(ftp://([\d.]+))).each do |address|
+      Server.find_or_create_by(addresses: address[0] )
     end
   end
   

@@ -15,11 +15,14 @@ gem 'sass-rails',          '~> 4.0'
 gem 'bootstrap-sass',      '~> 3.0.3.0'
 gem 'inherited_resources', '~> 1.4.0'
 
-gem 'sunspot_rails'
+gem 'tire'
 gem 'kaminari'
 
+# Background Jobs
+gem 'sidekiq', '~> 2.17'
+gem 'sinatra', '>= 1.3.0', require: nil, group: [:development, :production]
+
 group :development, :test do
-  gem 'sunspot_solr'
   gem 'byebug'
   gem 'rspec-rails', '~> 2.0'
   gem 'factory_girl_rails'

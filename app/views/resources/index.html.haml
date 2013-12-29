@@ -2,15 +2,15 @@
 
 = render :partial => 'search'
 
-#facets
-  %h2 Filters
-  = render :partial => 'facets'
-
-#results
-  %h2 #{collection.total} files found
+#results.col-xs-12.col-sm-9
+  %p #{@results.total_count} files found
   
   %ol
-    - collection.each_hit_with_result do |hit, resource|
-      %li= render :partial => 'result', :locals => {:hit => hit, :resource => resource}
+    - @results.each_with_hit do |record, hit|
+      %li= render :partial => 'result', locals: {result: Tire::Results::Item.new(hit), resource: record}
   
-  = paginate collection.results
+  = paginate @results
+
+#facets.col-xs-6.col-sm-3
+  %h2 Filters
+  = render :partial => 'facets'

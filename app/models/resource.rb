@@ -11,11 +11,12 @@ class Resource < ActiveRecord::Base
   include Resource::Chunk
   include Resource::Checksum
   
-  scope :indexed, where(:indexed => true)
-  scope :non_indexed, where(:indexed => false)
+  scope :indexed,      ->{ where indexed: true  }
+  scope :non_indexed,  ->{ where indexed: false }
+  scope :unseen_since, ->(time){ where "last_seen_at IS null OR last_seen_at < ?", time }
   
   def uri
-    server.uri_ftp + path[1..-1]
+    server.address + path[1..-1]
   end
   
 end

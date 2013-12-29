@@ -1,32 +1,37 @@
-%a.path{:href => resource.server.uri_ftp.sub(%r(/$),'') << resource.path_without_filename << "/" }
-  = (h(resource.server.uri_ftp.sub(%r(/$),'')) << format_highlight(hit, :path_without_filename) << '/').html_safe
-
 %h3
+  %div
+    %a{:href => resource.uri.split("/")[0..-2].join("/")}
+      - if result.highlight
+        %small= (result.highlight.folder || [resource.folder]).join.html_safe
+      - else
+        %small= resource.folder
   %a{:href => resource.uri}
-    = format_highlight hit, :filename
+    - if result.highlight
+      = (result.highlight.filename || [resource.filename]).join.html_safe
+    - else
+      = resource.filename
 
-%pre= #resource.metadata.to_yaml
-%dl
-  %dt ID
-  %dd= resource.id
-  %dt Size
-  %dd= number_to_human_size(resource.filesize) || '-'
-  %dt Duration
-  %dd #{format_resolution(resource.duration)} h
+
+%div
+  = number_to_human_size(resource.filesize)
+  ·
+  
+  %span{ title: 'Duration' }
+    #{format_resolution(resource.duration)} h
   
   - if resource.video_codec
-    %dt Video-Codec
-    %dd= resource.video_codec
+    ·
+    = resource.video_codec
   
   - if resource.resolution
-    %dt Resolution
-    %dd
-      = resource.resolution
-      %small (#{resource.width_height})
+    · 
+    = resource.resolution
+    %small (#{resource.width_height})
   
   - if resource.subtitle_languages.any?
-    %dt Subtitles
-    %dd= resource.subtitle_languages.join(", ")
+    ·
+    Subtitles:
+    = resource.subtitle_languages.join(", ")
 
 - audio_streams = resource.audio_streams
-= render :partial => 'audio_streams', :locals => {:audio_streams => audio_streams} if audio_streams.any?
+= render :partial => 'audio_streams', :locals => {:audio_streams => audio_streams} if audio_streams.try(:any?)

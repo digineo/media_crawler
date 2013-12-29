@@ -15,11 +15,11 @@ module Resource::Metadata
   end
     
   def update_metadata
-    self.metadata = FFMPEG::Movie.new(chunk_path)
+    self.metadata = FFMPEG::Movie.new(chunk_path.to_s)
     self.indexed  = true
     self.update_checksum
     self.save! unless new_record?
-    solr_index!
+    self.update_index
   end
   
   def audio_streams
@@ -35,7 +35,7 @@ module Resource::Metadata
   end
   
   def video_codec
-    video_streams.first.codec if video_streams.any?
+    video_streams.first.codec.try(:split).try(:first) if video_streams.any?
   end
   
   def audio_languages

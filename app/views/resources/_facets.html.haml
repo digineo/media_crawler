@@ -1,16 +1,9 @@
-= render_facet :filesize
-
 .facet
-  %h3
-    Duration
-    = remove_filter_link :duration
-  %ul
-    - for row in collection.facet(:duration).rows
-      %li
-        = facet_link :duration, row, t(row.value.to_s.sub("..","-"), :scope => 'facets.duration')
-
-= render_facet :resolution
-= render_facet :video_codec
-= render_facet :audio_language, :audio_languages
-= render_facet :audio_channels
-= render_facet :subtitle_language, :subtitle_languages
+  - @results.facets.each do |title,facet|
+    %h3= title
+    %ul
+      - facet[facet["_type"].pluralize].each do |row|
+        %li
+          %a{ href: '#'}
+            = row['term'] || "#{row['from']}..#{row['max']}"
+            %span.badge= row['count']

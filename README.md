@@ -35,9 +35,8 @@ Then prepare the database. If you want to modify the database configuration, jus
 Running
 -------
 
-First of all you have to start the Solr background process, afterwards the rails process:
+Start the rails process with:
 
-    rake sunspot:solr:start
     rails s
 
 Now you can reach the media crawler under [http://localhost:3000/](http://localhost:3000/).

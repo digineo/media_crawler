@@ -32,9 +32,7 @@ ActiveRecord::Schema.define(version: 20110807174859) do
 
   create_table "servers", force: true do |t|
     t.string   "name"
-    t.string   "uri_ftp"
-    t.string   "uri_http"
-    t.string   "uri_samba"
+    t.string   "addresses"
     t.string   "state",               default: "pending", null: false
     t.datetime "checked_at"
     t.datetime "files_updated_at"

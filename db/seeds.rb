@@ -7,4 +7,5 @@
 #   Mayor.create(:name => 'Daley', :city => cities.first)
 
 Server.create! \
-  :name => 'my local computer'
+  name:      'my local computer',
+  addresses: '127.0.0.1'

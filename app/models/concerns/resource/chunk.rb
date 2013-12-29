@@ -6,11 +6,11 @@ module Resource::Chunk
   end
   
   def chunk_path
-    "#{Rails.root}/data/servers/#{server_id}/chunks/#{id}"
+    data_path.join("chunks/#{id}")
   end
   
   def download_chunk(ftp)
-    `mkdir -p '#{File.dirname(chunk_path)}'`
+    chunk_path.dirname.mkpath
     retried = false
     begin
       conn    = ftp.send :transfercmd, "RETR " << path

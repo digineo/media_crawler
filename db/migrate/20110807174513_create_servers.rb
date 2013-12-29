@@ -2,10 +2,7 @@ class CreateServers < ActiveRecord::Migration
   def self.up
     create_table :servers do |t|
       t.string :name
-      t.string \
-        :uri_ftp,
-        :uri_http,
-        :uri_samba
+      t.string :addresses
       t.string :state, :null => false, :default => 'pending'
       t.datetime \
         :checked_at,
