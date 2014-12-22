@@ -4,22 +4,28 @@ Media Crawler
 A tool for crawling, indexing of media files coming with a powerful search engine.
 Actually only FTP servers are supported.
 
+It depends on [MongoDB](http://www.mongodb.org/), [ElasticSearch](http://www.elasticsearch.org/) and [Redis](http://redis.io/).
 
 
 Installation
 ------------
 
-It is recommended to install Ruby 2.0 using [RVM](http://rvm.io/):
+It is recommended to install Ruby 2.1 using [RVM](http://rvm.io/):
 
     (sudo) curl -sSL https://get.rvm.io | bash -s stable
 
 On Debian/Ubuntu you also need to install the following packages:
 
-    (sudo) apt-get install mongodb ffmpeg lftp
+    (sudo) apt-get install mongodb redis-server avconv lftp
+
+Elasticsearch:
+
+    wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.2.deb
+    (sudo) dpkg -i elasticsearch-1.4.2.deb
 
 Clone this repository:
 
-    git clone git@github.com:digineo/media_crawler.git
+    git clone git://github.com/digineo/media_crawler.git
 
 Now change into the directory and install the required gems:
 
@@ -36,9 +42,10 @@ Start the rails process with:
     rails s
 
 Now you can reach the media crawler under [http://localhost:3000/](http://localhost:3000/).
-To stop all servers just press CTRL + C and execute:
 
-    rake sunspot:solr:stop
+Start [Sidekiq](http://sidekiq.org/) for background processing:
+
+    sidekiq -v
 
 Managing servers
 ----------------
@@ -68,7 +75,7 @@ Just take a look at the maintenance methods in `app/models/maintenance.rb'. To c
 Credits and License
 -------------------
 
-(c) 2011-2013 Digineo GmbH, released under the AGPL v3 (GNU Affero General Public License Version 3)
+(c) 2011-2014 Digineo GmbH, released under the AGPL v3 (GNU Affero General Public License Version 3)
 
 Please feel free to fork and improve this great piece of software :-)
 
