@@ -25,7 +25,7 @@ class Resource
   
   scope :indexed,      ->{ where :checksum.exists => true }
   scope :non_indexed,  ->{ where :checksum => nil }
-  scope :unseen_since, ->(time){ where :seent_at.lt => time }
+  scope :seen_before,  ->(time){ where :seent_at.lt => time }
   
   def uri
     server.address + path[1..-1]

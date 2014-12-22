@@ -29,8 +29,7 @@ module Resource::Search
     as_json \
       only: [
         :id,
-        #:server_id,
-        :indexed,
+        :server_id,
         :filesize,
         :checksum,
       ],

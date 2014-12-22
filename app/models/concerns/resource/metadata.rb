@@ -21,18 +21,24 @@ module Resource::Metadata
   end
 
   def update_metadata
-    self.duration      = (metadata.duration / 60).ceil
-    self.audio_streams = metadata.audio_streams.map{|s|{
-      codec:      s.codec,
-      language:   s.language,
-      channels:   s.channels
-    }}
-    self.video_streams = metadata.video_streams.map{|s|{
-      codec:      s.codec,
-      width:      s.width,
-      height:     s.height,
-      resolution: self.class.resolution(s.width, s.height)
-    }}
+    if metadata.valid?
+      self.duration      = (metadata.duration / 60).ceil # to minutes
+      self.audio_streams = metadata.audio_streams.map{|s|{
+        codec:      s.codec,
+        language:   s.language,
+        channels:   s.channels
+      }}
+      self.video_streams = metadata.video_streams.map{|s|{
+        codec:      s.codec,
+        width:      s.width,
+        height:     s.height,
+        resolution: self.class.resolution(s.width, s.height)
+      }}
+    else
+      self.duration      = nil
+      self.audio_streams = nil
+      self.video_streams = nil
+    end
 
     update_checksum
     save! unless new_record?
@@ -52,7 +58,11 @@ module Resource::Metadata
   end
   
   def video_codec
-    video_streams.first.codec.try(:split).try(:first) if video_streams.any?
+    video_streams.first.try(:codec).try(:split).try(:first) if video_streams.any?
+  end
+
+  def resolution
+    video_streams.first.try :resolution
   end
   
   def audio_languages
@@ -66,7 +76,7 @@ module Resource::Metadata
   def audio_channels
     audio_streams.map(&:channels).compact.uniq
   end
-  
+
   def height
     metadata.height
   end

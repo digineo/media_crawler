@@ -9,13 +9,14 @@ module ResourcesHelper
     end
   end
   
-  def format_resolution(value)
+  def format_duration(value)
+    return unless value
     sprintf "%d:%02d", value/60, value%60
   end
   
   def remove_filter_link(field)
    if @filters[field]
-     link_to 'show all', merge_query(field, nil), :title => 'remove filter', :class => 'all'
+     link_to 'show all', merge_query(field, nil), :title => 'remove filter', class: 'btn btn-xs btn-success'
    end
   end
 

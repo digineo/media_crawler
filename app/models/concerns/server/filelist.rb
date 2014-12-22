@@ -23,6 +23,7 @@ module Server::Filelist
   end
 
   def download_filelist
+    tmpfile = filelist_path.to_s << ".new"
 
     with_lock do
       `exec lftp #{host_ftp.shellescape} -e '
@@ -31,19 +32,17 @@ module Server::Filelist
       set net:reconnect-interval-max 15;
       set net:timeout 10;
       du -a;
-      quit' > #{filelist_path.to_s.shellescape}`
+      quit' > #{tmpfile.shellescape}`
     end
     
     # does not work properly
     #$?.to_i == 0
     
-    # check if last line does contain the summarized size
-    filelist_complete?
-  end
-
-  def filelist_complete?
-    # last line should end with a size and a dot.
-    !!`tail -n 1 #{filelist_path.to_s.shellescape}`.strip.match(/^\d+\t\.$/)
+    # check if last line contains the summarized size
+    if size = Subprocess.run('tail', '-n', 1, tmpfile).strip.match(/^(\d+)\t\.$/)
+      File.rename tmpfile, filelist_path
+      update_attributes! total_size: size[1]
+    end
   end
   
   def parse_filelist
@@ -71,7 +70,7 @@ module Server::Filelist
     end
     
     # delete outdated resources
-    resources.unseen_since(ctime).each(&:destroy)
+    resources.seen_before(ctime).each(&:destroy)
     
     files_count
   end

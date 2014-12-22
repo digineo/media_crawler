@@ -3,8 +3,6 @@ class ResourcesController < ApplicationController
   PAGELEN_DEFAULT = 20
   PAGELEN_MAX     = 500
   
-  inherit_resources
-  
   def index
     query    = SearchQuery.new(params)
     @results = query.results

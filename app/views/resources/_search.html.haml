@@ -5,6 +5,10 @@
       %span.input-group-btn
         %button.btn.btn-default{ type: 'submit' }
           Search
+    %label
+      = check_box_tag :show_audio, 1, params[:show_audio]=='1'
+      Display audio streams
+
     = link_to "Usage", :usage, :title => 'check out the usage'
   %br
   show

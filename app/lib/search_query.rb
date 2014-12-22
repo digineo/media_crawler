@@ -42,21 +42,12 @@ class SearchQuery
     options = {}
     query   = @filters.remaining
 
-    # Prefill and set the filters (top-level `filter` and `facet_filter` elements)
-    #
-    __set_filters = lambda do |key, f|
-
-      @search_definition[:filter][:and] ||= []
-      @search_definition[:filter][:and]  |= [f]
-
-      @search_definition[:facets][key.to_sym][:facet_filter][:and] ||= []
-      @search_definition[:facets][key.to_sym][:facet_filter][:and]  |= [f]
-    end
+    @filtered = []
+    @aggs     = {}
 
     @search_definition = {
-      query:  {},
-      filter: {},
-      facets: {},
+      query: { filtered: {} },
+      aggs:  @aggs,
       highlight: {
         pre_tags: ['<em class="highlight">'],
         post_tags: ['</em>'],
@@ -69,77 +60,44 @@ class SearchQuery
 
     Facets.each do |key|
       if ranges = Ranges[key]
-        @search_definition[:facets][key] = {
+        # Range aggregation/filter
+        @aggs[key] = {
           range: {
             field: key.to_s,
             ranges: ranges.map { |r|
-              { from: r.from, to: r.to, include_lower: true, include_upper: false }
+              { from: r.from, to: r.to }
             }
-          },
-          facet_filter: {}
+          }
         }
+        if range = filters[key]
+          @filtered.push range: { key => {gte: range.begin, lt: range.end} }
+        end
       else
-        @search_definition[:facets][key] = {
+        # Term aggregation/filter
+        @aggs[key] = {
           terms: {
             field: key.to_s
-          },
-          facet_filter: {}
+          }
         }
+        if value = filters[key]
+          @filtered.push term: {key => value.first}
+        end
       end
     end
 
-
-    unless query.blank?
-      @search_definition[:query] = {
-        bool: {
-          should: [
-            { multi_match: {
-                query: query,
-                fields: ['folder','filename'],
-              }
-            }
-          ]
-        }
-      }
-    else
-      @search_definition[:query] = { match_all: {} }
+    # Apply any filters?
+    if @filtered.any?
+      @search_definition[:query][:filtered][:filter] = {and: @filtered}
     end
 
-    if options[:video_codec]
-      f = { term: { video_codec: @filters[:video_codec] } }
-
-      __set_filters.(:video_codec, f)
-    end
-
-    if options[:published_week]
-      f = {
-        range: {
-          published_on: {
-            gte: options[:published_week],
-            lte: "#{options[:published_week]}||+1w"
-          }
+    # Search query present?
+    if query.present?
+      @search_definition[:query][:filtered][:query] = {
+        multi_match: {
+          query: query,
+          fields: ['folder','filename'],
         }
       }
-
-      __set_filters.(:categories, f)
-      __set_filters.(:authors, f)
-    end
-
-    if query.present? && options[:comments]
-      @search_definition[:query][:bool][:should] ||= []
-      @search_definition[:query][:bool][:should] << {
-        nested: {
-          path: 'comments',
-          query: {
-            multi_match: {
-              query: query,
-              fields: ['body'],
-              operator: 'and'
-            }
-          }
-        }
-      }
-      @search_definition[:highlight][:fields].update 'comments.body' => { fragment_size: 50 }
     end
 
     if options[:sort]
@@ -147,48 +105,34 @@ class SearchQuery
       @search_definition[:track_scores] = true
     end
 
+    @search_definition[:size] = 50
 
     @results = Resource.__elasticsearch__.search(@search_definition)
   end
 
 
-
   FacetGroup = Struct.new(:key, :options)
 
-
-  class FacetTerm
+  class Bucket
     attr_reader :count, :key
-    def initialize(key, term)
-      @key   = key
-      @count = term['count']
-      @term  = term['term']
-    end
-    def to_s
-      @term
-    end
-  end
-
-  class RangeTerm
-    attr_reader :count, :key
-    def initialize(key, term)
-      @key   = key
-      @count = term['count']
-      @range = RangesByValues[key.to_sym]["#{term['from'].to_i}..#{term['to'].to_i}"]
+    def initialize(key, bucket)
+      @key    = key
+      @bucket = bucket
+      @count  = bucket.doc_count
     end
 
     def to_s
-      @range.to_s
+      @bucket.from ? RangesByValues[key.to_sym]["#{@bucket.from.to_i}..#{@bucket.to.to_i}"].to_s : @bucket['key']
+    end
+
+    def any?
+      count > 0
     end
   end
 
   def facets
-    results.response['facets'].map do |key, attr|
-      if attr.ranges
-        options = attr.ranges.map{|t| RangeTerm.new(key, t) }
-      else
-        options = attr.terms.map{|t| FacetTerm.new(key, t) }
-      end
-      FacetGroup.new(key, options)
+    results.response['aggregations'].map do |key, attr|
+      FacetGroup.new key, attr.buckets.map{|b| Bucket.new(key, b) }.select(&:any?)
     end
   end
 

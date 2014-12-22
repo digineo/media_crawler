@@ -3,12 +3,11 @@
 = render 'search'
 
 .row
-
   #facets.col-lg-2.col-sm-3
     %h2 Filters
     = render 'facets'
   #results.col-lg-10.col-sm-9
-    %p #{@results.size} files found
+    %p #{@results.results.total} files found in #{@results.took} ms.
     
     %ol
       - @results.records.each_with_hit do |record, hit|

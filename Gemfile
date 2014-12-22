@@ -13,7 +13,6 @@ gem 'rails-timeago',       '~> 2.0'
 gem 'haml-rails'
 gem 'sass-rails',          '~> 4.0'
 gem 'bootstrap-sass',      '~> 3.2'
-gem 'inherited_resources', '~> 1.5.0'
 
 gem 'elasticsearch',       '~> 1.0.6'
 gem 'elasticsearch-rails'

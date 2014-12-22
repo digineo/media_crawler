@@ -1,19 +1,18 @@
 %h1 Servers
 
-%p
-  %strong #{@stats.count} files
-  indexed with a total size of
-  %strong= number_to_human_size @stats.filesize
-  \.
+- if false
+  %p
+    %strong #{@stats.count} files
+    indexed with a total size of
+    %strong= number_to_human_size @stats.filesize
+    \.
 
 %table.table
   %thead
     %tr
-      %th ID
       %th Address
-      %th Known files
       %th Indexed files
-      %th State
+      %th Total size
       %th Checked At
   %tbody
     = render collection

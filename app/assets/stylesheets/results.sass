@@ -2,14 +2,10 @@
   
   em.highlight
     background-color: #ff0
+    font-style: normal
   
   a.path
     font-size: .85em
-  
-  a
-    text-decoration: none
-    &:hover
-      text-decoration: underline
   
   h3
     font-size: 1.2em
@@ -18,12 +14,10 @@
   .features
     @extend .list-inline
   
-  dl
-    overflow: auto
-    font-size: .9em
-    dt
-      float: left
-      color: #999
-    dd
-      float: left
-      margin: 0px 10px 0px 5px
+  ol
+    list-style: none
+    padding-left: 0
+    > li
+      padding: .5em 0
+      border-bottom: 1px solid #ccc
+

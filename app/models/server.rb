@@ -11,6 +11,8 @@ class Server
   field :files_updated_at,   type: DateTime
   field :chunks_upadated_at, type: DateTime
 
+  field :total_size
+
   require_dependency 'server/metadata'
   include Server::Filelist
   include Server::Locking
@@ -22,7 +24,7 @@ class Server
   def data_path
     Rails.root.join("data/servers/#{id}")
   end
-  
+
   def update_all
     update_state!
     if up?
@@ -31,11 +33,11 @@ class Server
   end
 
   def address
-    "ftp://#{host_ftp}/"
+    "ftp://#{host_ftp}"
   end
   
   def host_ftp
     addresses.split.first
   end
-  
+
 end

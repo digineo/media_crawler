@@ -1,8 +1,6 @@
 %tr
-  %td= server.id
   %td= link_to server.address, server.address
-  %td.right= server.resources.count
   %td.right= link_to server.resources.indexed.count, resources_path(:query => "server_id:#{server.id}")
-  %td= server.state
-  %td= server.checked_at? ? "#{time_ago_in_words(server.checked_at)} ago" : 'never'
+  %td= number_to_human_size server.total_size
+  %td= server.files_updated_at? ? "#{time_ago_in_words(server.files_updated_at)} ago" : 'never'
   %td= link_to 'Filelist', [:filelist, server]

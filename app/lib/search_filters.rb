@@ -21,7 +21,7 @@ class SearchFilters
           @filters[key] = parse_duration(min)..parse_duration(max)
         when :duration_min, :duration_max
           @filters[key] = parse_duration(value)
-        when :video_codec, :audio_codec, :audio_language, :subtitle_language
+        when :video_codec, :audio_codec, :audio_languages, :subtitle_languages
           @filters[key] ||= []
           @filters[key] += value.include?(",") ? value.split(",") : [value.to_s]
         else

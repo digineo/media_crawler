@@ -1,15 +1,15 @@
-%table
+%table.table.table-condensed.table-bordered
   %thead
     %tr
       %th Language
-      %th Codec
       %th Channels
+      %th Codec
       %th Bitrate
       %th Sample Rate
   - audio_streams.each do |stream|
     %tr
-      %td= stream.language    || '-'
-      %td= stream.codec       || '-'
-      %td.right= stream.channels    || '-'
-      %td.right= stream.bitrate     || '-'
-      %td.right= stream.sample_rate || '-'
+      %td= stream.language          || '—'
+      %td.right= stream.channels    || '—'
+      %td= stream.codec             || '—'
+      %td.right= stream.bitrate     || '—'
+      %td.right= stream.sample_rate || '—'
