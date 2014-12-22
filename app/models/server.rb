@@ -1,8 +1,17 @@
 require "net/ftp"
 require "timeout"
 
-class Server < ActiveRecord::Base
+class Server
+  include Mongoid::Document
+
+  field :name,      type: String
+  field :addresses, type: String
+  field :state,     type: String
   
+  field :files_updated_at,   type: DateTime
+  field :chunks_upadated_at, type: DateTime
+
+  require_dependency 'server/metadata'
   include Server::Filelist
   include Server::Locking
   include Server::Metadata

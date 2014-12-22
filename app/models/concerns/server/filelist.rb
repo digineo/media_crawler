@@ -62,8 +62,8 @@ module Server::Filelist
         
         # create/update resource
         resource = resources.find_or_initialize_by(path: path)
-        resource.filesize     = size.to_i * 1024
-        resource.last_seen_at = ctime
+        resource.filesize = size.to_i * 1024
+        resource.seen_at  = ctime
         resource.save!
         
         files_count += 1
@@ -71,7 +71,7 @@ module Server::Filelist
     end
     
     # delete outdated resources
-    resources.unseen_since(ctime).find_each(&:destroy)
+    resources.unseen_since(ctime).each(&:destroy)
     
     files_count
   end

@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails',  '~> 4.1.8'
-gem 'mysql2', '~> 0.3.0'
+gem 'rails',   '~> 4.1.8'
+gem 'mongoid', '~> 4.0.0'
 
 gem 'streamio-ffmpeg',
 #  github: 'digineo/streamio-ffmpeg'

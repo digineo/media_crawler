@@ -21,7 +21,7 @@ module Server::Metadata
       ftp.login
       
       # index non-indexed resources
-      resources.non_indexed.find_each do |resource|
+      resources.non_indexed.each do |resource|
         begin
           resource.download_chunk(ftp)
           puts "#{resource.id} '#{resource.path}' downloaded"
@@ -34,7 +34,7 @@ module Server::Metadata
       ftp.close
     end
     
-    self.metadata_updated_at = Time.now
+    self.chunks_upadated_at = Time.now
     save!
   end
 

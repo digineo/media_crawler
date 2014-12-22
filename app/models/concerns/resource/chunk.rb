@@ -15,7 +15,7 @@ module Resource::Chunk
 
   def download_chunk(ftp)
     chunk_path.dirname.mkpath
-    retried = false
+    retries = 0
     begin
       conn = ftp.send :transfercmd, "RETR " << path
       
@@ -29,8 +29,9 @@ module Resource::Chunk
         conn.close
       end
     rescue Net::FTPTempError
-      raise if retried
-      retried = true
+      sleep retries
+      raise if retries > 1
+      retries += 1
       retry
     end
   end

@@ -15,7 +15,7 @@ It is recommended to install Ruby 2.0 using [RVM](http://rvm.io/):
 
 On Debian/Ubuntu you also need to install the following packages:
 
-    (sudo) apt-get install mysql-server libmysqlclient-dev ffmpeg lftp libxslt-dev libxml2-dev
+    (sudo) apt-get install mongodb ffmpeg lftp
 
 Clone this repository:
 
@@ -27,10 +27,6 @@ Now change into the directory and install the required gems:
     gem install bundler
     bundle install
 
-Then prepare the database. If you want to modify the database configuration, just edit the `config/database.yml`.
-
-    rake db:migrate:reset
-    (you may be asked for a root password for mysql; please set one)
 
 Running
 -------

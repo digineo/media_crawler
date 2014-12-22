@@ -9,14 +9,31 @@ module Resource::Metadata
     ["360p",   360,  240],
     ["240p",   240,  160]
   ]
-  
+
   included do
-    serialize :metadata
+    field :duration,      type: Integer
+    field :audio_streams, type: Array
+    field :video_streams, type: Array
   end
-    
+
+  def metadata
+    @metadata ||= FFMPEG::Movie.new(chunk_path.to_s)
+  end
+
   def update_metadata
-    self.metadata = FFMPEG::Movie.new(chunk_path.to_s)
-    self.indexed  = true
+    self.duration      = (metadata.duration / 60).ceil
+    self.audio_streams = metadata.audio_streams.map{|s|{
+      codec:      s.codec,
+      language:   s.language,
+      channels:   s.channels
+    }}
+    self.video_streams = metadata.video_streams.map{|s|{
+      codec:      s.codec,
+      width:      s.width,
+      height:     s.height,
+      resolution: self.class.resolution(s.width, s.height)
+    }}
+
     update_checksum
     save! unless new_record?
     __elasticsearch__.index_document
@@ -50,10 +67,6 @@ module Resource::Metadata
     audio_streams.map(&:channels).compact.uniq
   end
   
-  def duration
-    (metadata.duration / 60).ceil
-  end
-  
   def height
     metadata.height
   end
@@ -66,12 +79,14 @@ module Resource::Metadata
     "#{width}x#{height}"
   end
   
-  def resolution
-    return "unknown" if !width || !height
-    for res in RESOLUTIONS
-      return res[0] if width >= res[1]*0.95 || height >= res[2]*0.95
+  module ClassMethods
+    def resolution(width, height)
+      return "unknown" if !width || !height
+      for res in RESOLUTIONS
+        return res[0] if width >= res[1]*0.95 || height >= res[2]*0.95
+      end
+      "unknown"
     end
-    "unknown"
   end
   
 end
