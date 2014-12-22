@@ -1,8 +1,11 @@
+require 'elasticsearch/model'
+
 module Resource::Search
   extend ActiveSupport::Concern
   
   included do
-    include Tire::Model::Search
+    include Elasticsearch::Model
+
     mapping do
       indexes :id,       index: :not_analyzed
       indexes :folder,   analyzer: 'snowball', boost: 2
@@ -22,8 +25,8 @@ module Resource::Search
     end
   end
 
-  def to_indexed_json
-    to_json \
+  def as_indexed_json(options={})
+    as_json \
       only: [
         :id,
         :server_id,

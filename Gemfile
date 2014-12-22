@@ -1,33 +1,45 @@
 source 'https://rubygems.org'
 
-gem 'rails',  '~> 4.0.1'
+gem 'rails',  '~> 4.1.8'
 gem 'mysql2', '~> 0.3.0'
 
 gem 'streamio-ffmpeg',
-  github: 'digineo/streamio-ffmpeg'
-#  :path => '../streamio-ffmpeg'
+#  github: 'digineo/streamio-ffmpeg'
+  path: '../streamio-ffmpeg'
 
 gem 'jquery-rails'
 gem 'turbolinks'
 gem 'rails-timeago',       '~> 2.0'
 gem 'haml-rails'
 gem 'sass-rails',          '~> 4.0'
-gem 'bootstrap-sass',      '~> 3.0.3.0'
-gem 'inherited_resources', '~> 1.4.0'
+gem 'bootstrap-sass',      '~> 3.2'
+gem 'inherited_resources', '~> 1.5.0'
 
-gem 'tire'
+gem 'elasticsearch',       '~> 1.0.6'
+gem 'elasticsearch-rails'
+gem 'elasticsearch-model'
 gem 'kaminari'
 
+gem 'uglifier',     '>= 2.6'
+gem 'coffee-rails', '~> 4.1'
+gem 'therubyracer',  platforms: :ruby
+
 # Background Jobs
-gem 'sidekiq', '~> 2.17'
-gem 'sinatra', '>= 1.3.0', require: nil, group: [:development, :production]
+gem 'sidekiq', '~> 3.3.0'
+gem 'sinatra', require: nil, group: [:development, :production]
 
 group :development, :test do
-  gem 'byebug'
-  gem 'rspec-rails', '~> 2.0'
+  gem 'pry-byebug'
+  gem 'rspec-rails', '~> 3.1.0'
   gem 'factory_girl_rails'
 end
 
+group :development do
+  gem 'pry-rails'
+  gem 'quiet_assets'
+end
+
 group :test do
-  gem 'shoulda-matchers', '~> 2.4.0'
+  gem 'rspec-its', '~> 1.0.1'
+  gem 'shoulda-matchers'
 end

@@ -1,8 +1,11 @@
-%form#query
-  %label{:for => :query_input} Query
-  = text_field_tag :query, params[:query], :id => 'query_input', :placeholder => 'your search term'
-  = submit_tag 'Search', :name => nil
-  = link_to "[Usage]", :usage, :title => 'check out the usage'
+= form_tag root_path, method: 'GET' do
+  .form-group
+    .input-group.input-group-lg
+      = text_field_tag :query, params[:query], class: 'form-control', placeholder: 'your search term', autofocus: true
+      %span.input-group-btn
+        %button.btn.btn-default{ type: 'submit' }
+          Search
+    = link_to "Usage", :usage, :title => 'check out the usage'
   %br
   show
   = select_tag :per_page, options_for_select(%w(20 50 100 250 500), params[:per_page])

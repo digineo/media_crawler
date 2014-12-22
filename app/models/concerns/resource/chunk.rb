@@ -6,14 +6,18 @@ module Resource::Chunk
   end
   
   def chunk_path
-    data_path.join("chunks/#{id}")
+    Rails.root.join "data/servers/#{server_id}/chunks/#{id}"
   end
-  
+
+  def chunk_exist?
+    chunk_path.exist?
+  end
+
   def download_chunk(ftp)
     chunk_path.dirname.mkpath
     retried = false
     begin
-      conn    = ftp.send :transfercmd, "RETR " << path
+      conn = ftp.send :transfercmd, "RETR " << path
       
       begin
         data = conn.read(Resource::CHUNK_SIZE)
@@ -24,15 +28,15 @@ module Resource::Chunk
       ensure
         conn.close
       end
-    rescue Net::FTPTempError => e
-      raise e if retried
+    rescue Net::FTPTempError
+      raise if retried
       retried = true
       retry
     end
   end
   
   def delete_chunk
-    File.unlink(chunk_path) if File.exists?(chunk_path)
+    chunk_path.unlink if chunk_exist?
   end
   
 end

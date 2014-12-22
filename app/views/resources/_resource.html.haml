@@ -1,0 +1,39 @@
+%h3<
+  - if hit.respond_to?(:highlight)
+    = hit.try(:highlight).try(:folder) ? hit.highlight.folder.join.html_safe : hit.folder
+    \/
+    = hit.try(:highlight).try(:filename) ? hit.highlight.filename.join.html_safe : hit.filename
+  - else
+    hit.path
+-#    %a{:href => hit.uri.split("/")[0..-2].join("/")}
+-#      - if hit.highlight
+-#        %small= (hit.highlight.folder || [hit.folder]).join.html_safe
+-#      - else
+-#        %small= hit.folder
+-#  %a{:href => hit.uri}
+-#    - if hit.highlight
+-#      = (hit.highlight.filename || [hit.filename]).join.html_safe
+-#    - else
+-#      = hit.filename
+-#
+-#
+%ul.features
+  %li= number_to_human_size(hit.filesize)
+  
+  - byebug
+  %li{ title: 'Duration in Hours' }
+    = format_resolution hit.try(:duration) || record.duration
+  
+  - if hit.resolution
+    %li{ title: 'Video Resolution' }= hit.resolution
+    -# %small (#{hit.width_height})
+  
+  - if hit.video_codec
+    %li{ title: 'Video Codec' }= hit.video_codec
+  
+  - if hit.subtitle_languages.any?
+    Subtitles:
+    %li= hit.subtitle_languages.join(", ")
+-#
+-#- audio_streams = hit.audio_streams
+-#= render :partial => 'audio_streams', :locals => {:audio_streams => audio_streams} if audio_streams.try(:any?)

@@ -18,16 +18,7 @@ module ResourcesHelper
      link_to 'show all', merge_query(field, nil), :title => 'remove filter', :class => 'all'
    end
   end
-  
-  def facet_link(field, row, text=nil)
-    text   ||= row.value
-    active   = params[:query].to_s.include?("#{field}:#{row.value}")
-    
-    html = link_to text, merge_query(field, row.value), :class => active ? 'active' : nil
-    html << " (#{row.count})"
-    html.html_safe
-  end
-  
+
   def merge_query(field, value)
     query = params[:query].to_s.dup
     

@@ -11,7 +11,7 @@ Installation
 
 It is recommended to install Ruby 2.0 using [RVM](http://rvm.io/):
 
-    (sudo) curl -L https://get.rvm.io | bash -s stable --ruby
+    (sudo) curl -sSL https://get.rvm.io | bash -s stable
 
 On Debian/Ubuntu you also need to install the following packages:
 

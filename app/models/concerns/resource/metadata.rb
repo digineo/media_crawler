@@ -17,9 +17,9 @@ module Resource::Metadata
   def update_metadata
     self.metadata = FFMPEG::Movie.new(chunk_path.to_s)
     self.indexed  = true
-    self.update_checksum
-    self.save! unless new_record?
-    self.update_index
+    update_checksum
+    save! unless new_record?
+    __elasticsearch__.index_document
   end
   
   def audio_streams

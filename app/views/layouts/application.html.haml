@@ -8,12 +8,7 @@
       = javascript_include_tag :application, "data-turbolinks-track" => true
       = csrf_meta_tags
   %body
-    %section.container
+    .container-fluid
       = render 'layouts/navigation'
-      #main{role: "main"}
-        .container
-          .content
-            .row
-              .span12
-                = render 'layouts/messages'
-                = yield
+      = render 'layouts/messages'
+      = yield

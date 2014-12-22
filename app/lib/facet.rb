@@ -11,6 +11,14 @@ module Facet
       @from, @to = self.class.parse_sizerange(str)
     end
 
+    def to_s
+      @key
+    end
+
+    def numeric
+      "#{@from}..#{@to}"
+    end
+
     def self.parse_sizerange(str)
       if m = str.match(/^(\d+[kmg]?)\.\.(\d+[kmg]?)$/)
         [ parse_size(m[1]), parse_size(m[2]) ]

@@ -24,10 +24,10 @@ module Server::Metadata
       resources.non_indexed.find_each do |resource|
         begin
           resource.download_chunk(ftp)
-          puts "#{resource.id} #{resource.path} downloaded"
+          puts "#{resource.id} '#{resource.path}' downloaded"
           resource.async :update_metadata
         rescue Net::FTPPermError => e
-          puts "#{resource.id} #{resource.path}: #{e.message}"
+          puts "#{resource.id} '#{resource.path}': #{e.message}"
         end
       end
     ensure

@@ -8,6 +8,7 @@ class ResourcesController < ApplicationController
   def index
     query    = SearchQuery.new(params)
     @results = query.results
+    @facets  = query.facets
     @filters = query.filters
   end
 

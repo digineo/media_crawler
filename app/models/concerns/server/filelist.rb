@@ -25,7 +25,7 @@ module Server::Filelist
   def download_filelist
 
     with_lock do
-      `lftp #{host_ftp.shellescape} -e '
+      `exec lftp #{host_ftp.shellescape} -e '
       set net:max-retries 3;
       set net:reconnect-interval-base 5;
       set net:reconnect-interval-max 15;
@@ -42,19 +42,19 @@ module Server::Filelist
   end
 
   def filelist_complete?
-    line = `tail -n 1 #{filelist_path.to_s.shellescape}`.strip
-    line =~ /^\d+\t\.$/
+    # last line should end with a size and a dot.
+    !!`tail -n 1 #{filelist_path.to_s.shellescape}`.strip.match(/^\d+\t\.$/)
   end
   
   def parse_filelist
-    now         = Time.now
     files_count = 0
+    ctime       = nil
     
-    File.open(filelist_path, "r") do |f|
+    File.open(filelist_path, "rb") do |f|
+      ctime = f.ctime
+
       f.each_line do |line|
-        cols = line.strip.split("\t")
-        size = cols[0]
-        path = cols[1]
+        size, path = line.strip.split("\t",2)
         path = path[1..-1] if path.to_s.starts_with?(".")
         
         # check file pattern
@@ -63,7 +63,7 @@ module Server::Filelist
         # create/update resource
         resource = resources.find_or_initialize_by(path: path)
         resource.filesize     = size.to_i * 1024
-        resource.last_seen_at = now
+        resource.last_seen_at = ctime
         resource.save!
         
         files_count += 1
@@ -71,7 +71,7 @@ module Server::Filelist
     end
     
     # delete outdated resources
-    resources.unseen_since(now).find_each(&:destroy)
+    resources.unseen_since(ctime).find_each(&:destroy)
     
     files_count
   end

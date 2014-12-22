@@ -4,7 +4,7 @@ class ServersController < ApplicationController
   actions :index
   
   def index
-    @stats = Resource.indexed.all(:select => 'count(*) count, sum(filesize) filesize')[0]
+    @stats = Resource.indexed.select('count(*) count, sum(filesize) filesize')[0]
   end
 
   def filelist

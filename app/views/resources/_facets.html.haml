@@ -1,9 +1,10 @@
-.facet
-  - @results.facets.each do |title,facet|
-    %h3= title
-    %ul
-      - facet[facet["_type"].pluralize].each do |row|
-        %li
-          %a{ href: '#'}
-            = row['term'] || "#{row['from']}..#{row['max']}"
-            %span.badge= row['count']
+
+- @facets.each do |facet|
+  %h3= facet.key
+  = remove_filter_link facet.key.to_sym
+  %ul
+    - facet.options.each do |option|
+      %li
+        %a{ href: url_for(merge_query option.key, option.to_s) }
+          = option
+          %span.badge.badge-default= option.count

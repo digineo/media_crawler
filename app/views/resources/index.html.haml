@@ -1,16 +1,17 @@
 %h1 Search by metadata
 
-= render :partial => 'search'
+= render 'search'
 
-#results.col-xs-12.col-sm-9
-  %p #{@results.total_count} files found
-  
-  %ol
-    - @results.each_with_hit do |record, hit|
-      %li= render :partial => 'result', locals: {result: Tire::Results::Item.new(hit), resource: record}
-  
-  = paginate @results
+.row
 
-#facets.col-xs-6.col-sm-3
-  %h2 Filters
-  = render :partial => 'facets'
+  #facets.col-lg-2.col-sm-3
+    %h2 Filters
+    = render 'facets'
+  #results.col-lg-10.col-sm-9
+    %p #{@results.size} files found
+    
+    %ol
+      - @results.records.each_with_hit do |record, hit|
+        %li= render partial: 'resource', locals: { record: record, hit: hit }
+    
+    = #paginate @results
