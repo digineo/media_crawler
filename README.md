@@ -7,6 +7,15 @@ Actually only FTP servers are supported.
 It depends on [MongoDB](http://www.mongodb.org/), [ElasticSearch](http://www.elasticsearch.org/) and [Redis](http://redis.io/).
 
 
+How it works
+------------
+
+1. Downloading the filelist with `lftp -e 'du -a'`.
+2. Parsing the filelist and inserting paths with media extensions into the MongoDB database.
+3. Downloading a chunk (first 50 kb) for each path.
+4. Analyzing each chunk with `ffmpeg -i $file` and copying the metadata into the ElasticSearch index.
+
+
 Installation
 ------------
 
@@ -46,6 +55,7 @@ Now you can reach the media crawler under [http://localhost:3000/](http://localh
 Start [Sidekiq](http://sidekiq.org/) for background processing:
 
     sidekiq -v
+
 
 Managing servers
 ----------------
