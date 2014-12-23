@@ -7,6 +7,9 @@
     - else
       = "#{hit.folder}/#{hit.filename}"
 
+- if false
+  = hit.checksum
+  = hit.server_id
 
 %ul.features
   %li= number_to_human_size hit.filesize
@@ -16,7 +19,9 @@
   
   - if value = hit.resolution
     %li{ title: 'Video Resolution' }>
-      %code= value
+      %code
+        = value
+      %span.text-muted (#{record.width_height})
   
   - if value = hit.video_codec
     %li{ title: 'Video Codec' }>
@@ -29,5 +34,3 @@
 - if params[:show_audio]
   - audio_streams = record.audio_streams
   = render :partial => 'audio_streams', :locals => {:audio_streams => audio_streams} if audio_streams.try(:any?)
-
-- #%span.text-muted= record.id

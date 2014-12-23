@@ -21,7 +21,8 @@ module Server::Metadata
       ftp.login
       
       # index non-indexed resources
-      resources.non_indexed.each do |resource|
+      #resources.non_indexed.each do |resource|
+      resources.each do |resource|
         begin
           resource.download_chunk(ftp)
           puts "#{resource.id} '#{resource.path}' downloaded"

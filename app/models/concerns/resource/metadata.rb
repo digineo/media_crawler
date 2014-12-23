@@ -11,9 +11,10 @@ module Resource::Metadata
   ]
 
   included do
-    field :duration,      type: Integer
-    field :audio_streams, type: Array
-    field :video_streams, type: Array
+    field :duration,           type: Integer
+    field :audio_streams,      type: Array
+    field :video_streams,      type: Array
+    field :subtitle_languages, type: Array
   end
 
   def metadata
@@ -29,60 +30,37 @@ module Resource::Metadata
         channels:   s.channels
       }}
       self.video_streams = metadata.video_streams.map{|s|{
-        codec:      s.codec,
+        codec:      s.codec.try(:split).try(:first),
         width:      s.width,
         height:     s.height,
         resolution: self.class.resolution(s.width, s.height)
       }}
+      self.subtitle_languages = metadata.subtitles.map(&:language).compact.uniq
     else
-      self.duration      = nil
-      self.audio_streams = nil
-      self.video_streams = nil
+      self.duration           = nil
+      self.audio_streams      = nil
+      self.video_streams      = nil
+      self.subtitle_languages = nil
     end
 
     update_checksum
     save! unless new_record?
     __elasticsearch__.index_document
   end
-  
-  def audio_streams
-    metadata.audio_streams
-  end
-  
-  def video_streams
-    metadata.video_streams
-  end
-  
-  def audio_codecs
-    audio_streams.map(&:codec).compact.uniq
-  end
-  
-  def video_codec
-    video_streams.first.try(:codec).try(:split).try(:first) if video_streams.any?
+
+  # Delegation to the first video stream
+  %i( video_codec resolution height width ).each do |method|
+    define_method method do
+      video_streams.first.try :[], method if video_streams.present?
+    end
   end
 
-  def resolution
-    video_streams.first.try :resolution
-  end
-  
   def audio_languages
-    audio_streams.map(&:language).compact.uniq
-  end
-  
-  def subtitle_languages
-    metadata.subtitles.map(&:language).compact.uniq
+    (audio_streams || []).map{|s| s[:language] }.compact.uniq
   end
   
   def audio_channels
-    audio_streams.map(&:channels).compact.uniq
-  end
-
-  def height
-    metadata.height
-  end
-  
-  def width
-    metadata.width
+    (audio_streams || []).map{|s| s[:channels] }.compact.uniq
   end
   
   def width_height

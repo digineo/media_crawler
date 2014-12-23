@@ -6,7 +6,7 @@ class Resource
   field :path,      type: String
   field :filesize,  type: Integer
   field :seen_at,   type: DateTime
-  field :checksum,  type: DateTime
+  field :checksum,  type: String
 
   index({ server_id: 1, path: 1 }, { unique: true })
 

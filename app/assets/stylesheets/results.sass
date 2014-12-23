@@ -18,6 +18,11 @@
     list-style: none
     padding-left: 0
     > li
-      padding: .5em 0
+      padding: .5em
       border-bottom: 1px solid #ccc
+
+      &:nth-child(odd)
+        background: $table-bg-accent
+      &:hover
+        background: $table-bg-hover
 

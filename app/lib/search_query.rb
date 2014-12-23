@@ -45,6 +45,26 @@ class SearchQuery
     @filtered = []
     @aggs     = {}
 
+=begin
+    # Aggregation by Checksum
+    @aggs[:checksum] = {
+      terms: {
+        field: 'checksum',
+        size: 10
+      },
+      aggs: {
+        top_checksum_hits: {
+          top_hits: {
+            size: 3,
+            _source: {
+              include: %w(folder filename)
+            }
+          }
+        }
+      }
+    }
+=end
+
     @search_definition = {
       query: { filtered: {} },
       aggs:  @aggs,
@@ -131,6 +151,7 @@ class SearchQuery
   end
 
   def facets
+    #byebug
     results.response['aggregations'].map do |key, attr|
       FacetGroup.new key, attr.buckets.map{|b| Bucket.new(key, b) }.select(&:any?)
     end

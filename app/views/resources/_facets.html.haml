@@ -1,10 +1,13 @@
 
 - @facets.each do |facet|
-  %h3= facet.key
-  = remove_filter_link facet.key.to_sym
-  %ul
-    - facet.options.each do |option|
-      %li
-        %a{ href: url_for(merge_query option.key, option.to_s) }
-          = option
-          %span.badge.badge-default= option.count
+  .panel.panel-default
+    .panel-heading
+      %h3= facet.key
+    .panel-body
+      = remove_filter_link facet.key.to_sym
+      %ul
+        - facet.options.each do |option|
+          %li
+            %a{ href: url_for(merge_query option.key, option.to_s) }
+              = option
+              %span.badge.badge-default= option.count
