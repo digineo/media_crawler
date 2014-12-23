@@ -39,6 +39,6 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-its', '~> 1.0.1'
+  gem 'rspec-its', '~> 1.1'
   gem 'shoulda-matchers'
 end
