@@ -11,7 +11,7 @@ gem 'jquery-rails'
 gem 'turbolinks'
 gem 'rails-timeago',       '~> 2.0'
 gem 'haml-rails'
-gem 'sass-rails',          '~> 4.0'
+gem 'sass-rails',          '~> 5.0'
 gem 'bootstrap-sass',      '~> 3.2'
 
 gem 'elasticsearch',       '~> 1.0.6'
