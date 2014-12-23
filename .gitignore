@@ -1,6 +1,7 @@
 /.bundle
 /.project
 /data
+/public/data
 /db/*.sqlite3
 /log
 /tmp

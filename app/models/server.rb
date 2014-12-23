@@ -18,6 +18,7 @@ class Server
   include Server::Locking
   include Server::Metadata
   include Server::State
+  include AsyncHelper
 
   has_many :resources
   

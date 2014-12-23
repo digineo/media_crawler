@@ -1,0 +1,12 @@
+%h1<
+  = link_to parent.addresses, '#'
+  = "/"
+  %span#path
+
+%table#files.table.table-stiped.table-hover{ 'data-server-id' => parent.id }
+  %thead
+    %tr
+      %th{ title: 'This is a logarithmic scale' } Size
+      %th Entry
+      %th Objects
+  %tbody

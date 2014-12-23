@@ -18,6 +18,8 @@ module Server::Filelist
     if download_filelist && parse_filelist
       self.files_updated_at = Time.now
       save!
+
+      async :generate_graph
       true
     end
   end
@@ -73,6 +75,10 @@ module Server::Filelist
     resources.seen_before(ctime).each(&:destroy)
     
     files_count
+  end
+
+  def generate_graph
+    DirectoryGrapher.new(filelist_path).write Rails.root.join("public/data/servers/#{id}")
   end
 
 end

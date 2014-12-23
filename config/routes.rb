@@ -5,6 +5,7 @@ MediaCrawler::Application.routes.draw do
     member do
       get 'filelist'
     end
+    resources :files, only: :index
   end
 
   require 'sidekiq/web'

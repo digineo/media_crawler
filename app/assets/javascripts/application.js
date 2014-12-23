@@ -3,4 +3,4 @@
 //= require turbolinks
 //= require rails-timeago
 
-//  require_tree ./application
+//= require_tree ./application
