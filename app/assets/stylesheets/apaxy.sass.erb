@@ -1,0 +1,27 @@
+.file, .folder
+  padding-left: 20px
+  background-repeat: no-repeat
+
+
+.file
+  background-image: image-url("apaxy/default.png") 
+
+.folder
+  background-image: image-url("apaxy/folder.png")
+
+.folder-parent
+  background-image: image-url("apaxy/folder-parent.png")
+
+<%=
+
+sass = ''
+
+YAML.load_file(Rails.root.join "config/apaxy.yml").each do |name, extensions|
+  extensions.split(" ").each do |ext|
+    sass << ".file-#{ext}\n  background-image: image-url(\"apaxy/#{name}.png\")\n"
+  end
+end
+
+sass
+
+%>
