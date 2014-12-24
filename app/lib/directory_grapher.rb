@@ -11,6 +11,9 @@ class DirectoryGrapher
     def add(path, size)
       if path.include?("/")
         top, sub = path.split("/",2)
+        if top == "." || top == ".."
+          raise ArgumentError, "Illegal path: #{path.inspect}"
+        end
         (@children[top] ||= Dir.new).add(sub, size)
       elsif !@children[path] && size > 0
         @files << File.new(path, size)
