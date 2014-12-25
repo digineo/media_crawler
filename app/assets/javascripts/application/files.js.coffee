@@ -38,9 +38,7 @@ updateTable = ->
     $modified.text modified
 
     sizeCell = (size)->
-      width = Math.round(Math.log(size) * 5)
-      r     = (40 + Math.round(Math.log(size) * 10)) % 255
-      $("<td></td>").append("<div class='bar' style='width:#{width}px;background:hsla(#{r},100%,70%,0.5)'><span>#{filesize size*1024}</span></div>")
+      $("<td></td>").append filesizeBar(size)
 
     # Clear table
     tbody.html("")
