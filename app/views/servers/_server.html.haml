@@ -1,8 +1,9 @@
 %tr
-  %td= link_to server.address, server.address
+  %td
+    = link_to server.address, server.address
+    = link_to 'Browse Cache', [server, :files], class: 'btn btn-xs btn-primary'
   %td.right= link_to server.resources.indexed.count, resources_path(:query => "server_id:#{server.id}")
   %td= number_to_human_size server.total_size
   %td= server.files_updated_at? ? "#{time_ago_in_words(server.files_updated_at)} ago" : 'never'
   %td
-    = link_to 'Browse', [server, :files]
-    = link_to 'Filelist', [:filelist, server]
+    = link_to 'Download Filelist', [:filelist, server]

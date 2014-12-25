@@ -1,0 +1,11 @@
+%h1 File search
+
+= render 'form'
+
+- if @search
+  %p #{@search.total} entries found in #{@search.took} ms.
+  %ol.entries
+    - @search.each_with_hit.each do |record, hit|
+      %li= render partial: 'hit', locals: {record: record, hit: hit}
+
+  = paginate @search

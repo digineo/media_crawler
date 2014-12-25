@@ -12,6 +12,8 @@
   .collapse.navbar-collapse.navbar-ex8-collapse
     %ul.nav.navbar-nav
       %li
-        %a{href: root_path} Home
+        %a{href: root_path} File search
+      %li
+        = link_to 'Media search', :resources
       %li
         = link_to 'Servers', :servers

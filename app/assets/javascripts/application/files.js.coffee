@@ -3,9 +3,9 @@ updateTable = ->
   files = $("#files")
   return unless files.length
 
-  # Find and Clear tbody
+  # Find important stuff
   server_id = files.data('server-id')
-  tbody     = files.find("tbody")
+  entries   = files.find(".entries")
   $path     = $("#path")
   $modified = $("#modified")
 
@@ -37,31 +37,27 @@ updateTable = ->
 
     $modified.text modified
 
-    sizeCell = (size)->
-      $("<td></td>").append filesizeBar(size)
-
-    # Clear table
-    tbody.html("")
+    # Clear entries
+    entries.html("")
 
     # Parent directory
     if parts.length
-      tbody.append("<tr><td></td><td><a href='#' class='folder folder-parent' >Parent Directory</a></td></tr>")
+      entries.append("<li><a href='#" + parts[0..-2].join("/") + "' class='folder folder-parent' >Parent Directory</a></li>")
 
     # Directories
     for child in data.children
-      tr = $ "<tr></tr>"
-      sizeCell(child.size).appendTo tr
-      $("<td></td>").append($("<a></a>", href: "##{path}#{child.name}", class: 'folder').text(child.name)).appendTo tr
-      $("<td></td>").text(child.count).appendTo tr
-      tr.appendTo tbody
+      tr = $ "<li></li>"
+      $(filesizeBar(child.size)).appendTo tr
+      $("<a></a>", href: "##{path}#{child.name}", class: 'folder').text(child.name).appendTo tr
+      tr.append(" <span class='badge'>#{child.count}</span>")
+      tr.appendTo entries
 
     # Files
     for child in data.files
-      tr = $ "<tr></tr>"
-      sizeCell(child.size).appendTo tr
-      $("<td></td>").append($("<span></span>", class: "file file-#{child.name.split('.').pop()}").text(child.name)).appendTo tr
-      $("<td></td>").appendTo tr
-      tr.appendTo tbody
+      tr = $ "<li></li>"
+      $(filesizeBar(child.size)).appendTo tr
+      $("<span></span>", class: "file file-#{child.name.split('.').pop()}").text(child.name).appendTo tr
+      tr.appendTo entries
 
 $(document).on 'ready page:load', updateTable
 $(window).on   'hashchange',      updateTable

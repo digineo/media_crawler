@@ -1,0 +1,24 @@
+
+ol.entries
+  list-style: none
+  padding-left: 0
+
+  em.highlight
+    background-color: #ff0
+    font-style: normal
+
+  > li
+    padding: .5em
+    border-bottom: 1px solid #ccc
+
+    .btn
+      opacity: 0.5
+    &:hover .btn
+      opacity: 1
+
+
+    &:nth-child(odd)
+      background: $table-bg-accent
+    &:hover
+      background: $table-bg-hover
+      

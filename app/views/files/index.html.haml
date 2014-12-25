@@ -1,5 +1,5 @@
 %h1<
-  = link_to parent.addresses, '#'
+  = link_to parent.host_ftp, '#', id: 'host'
   = "/"
   %span#path
 
@@ -7,10 +7,8 @@
   Cached at:
   %span#modified
 
-%table#files.table.table-stiped.table-hover{ 'data-server-id' => parent.id }
-  %thead
-    %tr
-      %th{ title: 'This is a logarithmic scale' } Size
-      %th Entry
-      %th Objects
-  %tbody
+.row
+  = render 'search'
+
+#files{ 'data-server-id' => parent.id }
+  %ol.entries

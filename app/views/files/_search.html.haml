@@ -1,0 +1,7 @@
+= form_tag root_path, method: 'GET', class: 'col-lg-4 col-md-6', id: 'subsearch' do
+  .form-group
+    .input-group
+      = text_field_tag :query, params[:query], class: 'form-control', placeholder: 'Search this folder', autofocus: true
+      %span.input-group-btn
+        %button.btn.btn-default{ type: 'submit' }
+          Search

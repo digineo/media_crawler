@@ -11,9 +11,10 @@ MediaCrawler::Application.routes.draw do
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
   
-  get 'usage' => 'static#usage'
+  get 'usage'     => 'static#usage'
+  get 'resources' => 'resources#index'
   
-  root :to => "resources#index"
+  root :to => "paths#index"
 
   # See how all your routes lay out with "rake routes"
 

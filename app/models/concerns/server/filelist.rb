@@ -19,7 +19,6 @@ module Server::Filelist
       self.files_updated_at = Time.now
       save!
 
-      async :generate_graph
       true
     end
   end
@@ -44,6 +43,10 @@ module Server::Filelist
     if size = Subprocess.run('tail', '-n', 1, tmpfile).strip.match(/^(\d+)\t\.$/)
       File.rename tmpfile, filelist_path
       update_attributes! total_size: size[1]
+
+      async :generate_graph
+      async :update_paths
+      true
     end
   end
   
@@ -51,10 +54,15 @@ module Server::Filelist
     files_count = 0
     ctime       = nil
     
-    File.open(filelist_path, "rb") do |f|
+    File.open(filelist_path, "r", charset: 'utf-8') do |f|
       ctime = f.ctime
 
       f.each_line do |line|
+        unless line.valid_encoding?
+          STDERR.puts "invalid encoding: #{line.inspect}"
+          next
+        end
+
         size, path = line.strip.split("\t",2)
         path = path[1..-1] if path.to_s.starts_with?(".")
         
@@ -77,8 +85,30 @@ module Server::Filelist
     files_count
   end
 
+  def directory_graph
+    @graph ||= DirectoryGrapher.new(filelist_path)
+  end
+
   def generate_graph
-    DirectoryGrapher.new(filelist_path).write Rails.root.join("public/data/servers/#{id}")
+    directory_graph.write Rails.root.join("public/data/servers/#{id}")
+  end
+
+  def update_paths
+    delete_paths
+    directory_graph.index!(self)
+  end
+
+  def delete_paths
+    # Remove all entries
+    Path.gateway.client.delete_by_query index: 'paths', body: {
+      query: {
+        filtered: {
+          filter: {
+            term:  { server_id: id.to_s },
+          }
+        }
+      }
+    }
   end
 
 end

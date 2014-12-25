@@ -17,6 +17,7 @@ gem 'bootstrap-sass',      '~> 3.2'
 gem 'elasticsearch',       '~> 1.0.6'
 gem 'elasticsearch-rails'
 gem 'elasticsearch-model'
+gem 'elasticsearch-persistence'
 gem 'kaminari'
 
 gem 'uglifier',     '>= 2.6'

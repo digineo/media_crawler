@@ -1,0 +1,7 @@
+= form_tag root_path, method: 'GET' do
+  .form-group
+    .input-group.input-group-lg
+      = text_field_tag :query, params[:query], class: 'form-control', placeholder: 'your search term', autofocus: true
+      %span.input-group-btn
+        %button.btn.btn-default{ type: 'submit' }
+          Search

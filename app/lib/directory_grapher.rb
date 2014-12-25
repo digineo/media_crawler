@@ -1,6 +1,10 @@
 class DirectoryGrapher
 
-  File = Struct.new(:name, :size)
+  File = Struct.new(:name, :size) do
+    def to_s
+      name
+    end
+  end
 
   class Dir
     def initialize
@@ -18,6 +22,18 @@ class DirectoryGrapher
       elsif !@children[path] && size > 0
         @files << File.new(path, size)
       end
+    end
+
+    # Walks through the tree and calls the given block with
+    # Pathname and File/Dir
+    def walk(pathname = Pathname.new(""), &block)
+      @children.each do |name,child|
+        child.walk pathname.join(name), &block
+      end
+      @files.each do |file|
+        yield pathname, file
+      end
+      yield pathname, self
     end
 
     def write_recursivly(output_dir)
@@ -69,8 +85,39 @@ class DirectoryGrapher
     end
   end
 
+  delegate :walk, to: :@root
+
   def write(output_dir)
     @root.write_recursivly output_dir
+  end
+
+  # Insert paths into the database and removes old entries
+  def index!(server)
+    # Insert a new entry
+    create_path = ->(path, name, entry){
+      attr = {
+        server_id: server.id,
+        host:      server.host_ftp,
+        path:      path,
+        name:      name,
+        size:      entry.size,
+        boost:     Math.log(entry.size)
+      }
+      attr[:objects] = entry.count if Dir === entry
+      Path.create attr
+    }
+
+    walk Pathname.new("/") do |pathname, entry|
+      case entry
+      when DirectoryGrapher::File
+        create_path.call pathname.to_s, entry.name, entry
+      when DirectoryGrapher::Dir
+        create_path.call *pathname.split.map(&:to_s), entry
+      else
+        raise "invalid entry: #{entry}"
+      end
+      puts "#{entry.class} #{pathname}/#{entry}"
+    end
   end
 
 end

@@ -1,0 +1,14 @@
+.filesize= record.size
+%a{ href: record.url, class: (record.objects ? 'folder' : 'file') }<
+  - if hit.respond_to?(:highlight)
+    = "ftp://#{record.host}"
+    = hit.try(:highlight).try(:path) ? hit.highlight.path.join.html_safe : record.path
+    = "/" if record.path != '/'
+    = hit.try(:highlight).try(:name) ? hit.highlight.name.join.html_safe : record.name
+  - else
+    = record.url
+
+- if record.objects
+  %span.badge= record.objects
+
+  = link_to 'Browse', server_files_path(record.server_id, anchor: "#{record.path == '/' ? '' : record.path[1..-1] << '/'}#{record.name_without_slash}"), class: 'btn btn-xs btn-default'

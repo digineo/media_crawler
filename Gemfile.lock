@@ -42,6 +42,10 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     arel (6.0.0)
+    axiom-types (0.1.1)
+      descendants_tracker (~> 0.0.4)
+      ice_nine (~> 0.11.0)
+      thread_safe (~> 0.3, >= 0.3.1)
     bootstrap-sass (3.3.1.0)
       sass (~> 3.2)
     bson (2.3.0)
@@ -53,6 +57,8 @@ GEM
     celluloid (0.16.0)
       timers (~> 4.0.0)
     coderay (1.1.0)
+    coercible (1.0.0)
+      descendants_tracker (~> 0.0.1)
     coffee-rails (4.1.0)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.0)
@@ -63,6 +69,8 @@ GEM
     columnize (0.9.0)
     connection_pool (2.1.0)
     debugger-linecache (1.2.0)
+    descendants_tracker (0.0.4)
+      thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
     elasticsearch (1.0.6)
       elasticsearch-api (= 1.0.6)
@@ -73,10 +81,18 @@ GEM
       activesupport (> 3)
       elasticsearch (> 0.4)
       hashie
+    elasticsearch-persistence (0.1.6)
+      activemodel (> 3)
+      activesupport (> 3)
+      elasticsearch (> 0.4)
+      elasticsearch-model (>= 0.1)
+      hashie
+      virtus
     elasticsearch-rails (0.1.6)
     elasticsearch-transport (1.0.6)
       faraday
       multi_json
+    equalizer (0.0.9)
     erubis (2.7.0)
     execjs (2.2.2)
     factory_girl (4.5.0)
@@ -106,6 +122,7 @@ GEM
       hpricot (~> 0.8.6)
       ruby_parser (~> 3.1.1)
     i18n (0.7.0)
+    ice_nine (0.11.1)
     jquery-rails (4.0.2)
       rails-dom-testing (~> 1.0)
       railties (>= 4.2.0)
@@ -252,6 +269,11 @@ GEM
     uglifier (2.6.0)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    virtus (1.0.3)
+      axiom-types (~> 0.1)
+      coercible (~> 1.0)
+      descendants_tracker (~> 0.0, >= 0.0.3)
+      equalizer (~> 0.0, >= 0.0.9)
 
 PLATFORMS
   ruby
@@ -261,6 +283,7 @@ DEPENDENCIES
   coffee-rails (~> 4.1)
   elasticsearch (~> 1.0.6)
   elasticsearch-model
+  elasticsearch-persistence
   elasticsearch-rails
   factory_girl_rails
   haml-rails
