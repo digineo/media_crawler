@@ -7,7 +7,7 @@
   #facets.col-lg-2.col-sm-3
     = render 'aggregations'
   .col-lg-10.col-sm-9
-    %p #{@search.total} entries found in #{@search.took} ms.
+    %p #{number_with_delimiter @search.total} entries found in #{@search.took} ms.
     %ol.entries
       - @search.each_with_hit.each do |record, hit|
         %li= render partial: 'hit', locals: {record: record, hit: hit}

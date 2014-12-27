@@ -8,9 +8,9 @@
         %strong= value
         = link_to 'show all', merge_query(agg.key, nil), :title => 'remove filter', class: 'btn btn-xs btn-success'
       - else
-        %ul
+        %ul.list-unstyled
           - results.each do |option|
             %li
               %a{ href: url_for(merge_query agg.key, option.to_s) }
                 = option
-                %span.badge.badge-default= option['doc_count']
+                %span.badge.badge-default= number_with_delimiter option['doc_count']
