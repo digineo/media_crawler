@@ -1,6 +1,9 @@
 module Server::Filelist
   extend ActiveSupport::Concern
 
+  class Error           < ::StandardError; end
+  class RetriesExceeded < Error; end
+
   def filelist_path
     data_path.join("filelist")
   end
@@ -20,24 +23,34 @@ module Server::Filelist
       async :update_paths
       true
     end
+  rescue RetriesExceeded
+    if Thread.current[:sidekiq_context]
+      # requeue
+      async :update_files
+    else
+      raise
+    end
   end
 
   def download_filelist
     tmpfile = filelist_path.to_s << ".new"
-
-    with_lock do
-      `exec lftp #{host_ftp.shellescape} -e '
-      set net:max-retries 3;
-      set net:reconnect-interval-base 5;
-      set net:reconnect-interval-max 15;
-      set net:timeout 10;
-      du -a;
-      quit' > #{tmpfile.shellescape}`
+    error   = nil
+    begin
+      with_lock :ftp do
+        Subprocess.run(Rails.root.join("bin/download_filelist"), host_ftp, tmpfile)
+      end
+    rescue Subprocess::Error
+      if $!.message.include?("max-retries exceeded")
+        raise RetriesExceeded 
+      else
+        # even this could mean success
+        error = $!
+      end
     end
-    
+
     # does not work properly
     #$?.to_i == 0
-    
+
     # check if last line contains the summarized size
     if size = Subprocess.run('tail', '-n', 1, tmpfile).strip.match(/^(\d+)\t\.$/)
       File.rename tmpfile, filelist_path
@@ -46,6 +59,8 @@ module Server::Filelist
         total_size:       size[1]
 
       true
+    else
+      raise error
     end
   end
   
@@ -89,7 +104,9 @@ module Server::Filelist
   end
 
   def generate_cache
-    directory_graph.write Rails.application.config.public_data_root.join("servers/#{id}")
+    with_lock :cache do
+      directory_graph.write Rails.application.config.public_data_root.join("servers/#{id}")
+    end
   end
 
 end

@@ -2,7 +2,7 @@ module Server::Metadata
   extend ActiveSupport::Concern
 
   def update_metadata
-    with_lock do
+    with_lock :ftp do
       update_metadata_without_lock
     end
   end

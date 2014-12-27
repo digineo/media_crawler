@@ -2,8 +2,10 @@ module Server::Paths
   extend ActiveSupport::Concern
 
   def update_paths
-    delete_paths
-    insert_paths
+    with_lock :paths do
+      delete_paths
+      insert_paths
+    end
   end
 
   def delete_paths

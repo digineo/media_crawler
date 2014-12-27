@@ -3,19 +3,15 @@ module Server::Locking
 
   class Locked < ::StandardError; end
 
-  def lock_file
-    data_path.join("lock")
-  end
-
-  def with_lock
+  def with_lock(name)
     # ensure directory exists
-    lock_file.dirname.mkpath
+    data_path.mkpath
 
-    File.open(lock_file, "w") do |file|
+    File.open(data_path.join("#{name}.lock"), "w") do |file|
       if file.flock(File::LOCK_EX | File::LOCK_NB)
         yield
       else
-        raise Locked, "Server #{id} already locked"
+        raise Locked, "Server #{id} already locked for #{name}"
       end
     end
   end

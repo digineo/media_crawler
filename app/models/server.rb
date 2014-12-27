@@ -29,7 +29,6 @@ class Server
   end
 
   def update_all
-    update_state!
     if up?
       update_files && update_metadata
     end

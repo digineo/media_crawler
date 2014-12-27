@@ -1,0 +1,11 @@
+#!/bin/sh -e
+
+mkdir -p "$(dirname $2)"
+
+LC_ALL=C exec lftp "$1" -e '
+set net:max-retries 3;
+set net:reconnect-interval-base 5;
+set net:reconnect-interval-max 15;
+set net:timeout 10;
+du -a;
+quit' > "$2"
