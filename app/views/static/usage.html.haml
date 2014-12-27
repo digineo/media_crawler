@@ -1,20 +1,53 @@
+- content_for :title, "Usage"
 %h1 Usage
 
-%dl.usage
-  %dt duration:[n..m]
-  %dd Duration between n and m minutes
-  
-  %dt duration_min:[n]
-  %dd Duration of n minutes or more
-  
-  %dt duration_max:[n]
-  %dd Duration of n minutes or less
-  
-  %dt resolution:[name]
+%dl.dl-horizontal
+  %dt host
   %dd
-    Possible values are
-    = Resource::Metadata::RESOLUTIONS.map(&:first).map{ |value| "<code>#{h value}</code>" }.join(", ").html_safe
-    and
-    %code unknown
+    Search a specific host.
+    .example
+      %code host:1.2.3.4
+  
+  %dt path
+  %dd
+    Search within a specific path. Use double quotes if the path contains spaces.
+    .example
+      %code path:/some/path
+    .example
+      %code path:"/path/with space"
 
-%p ... not finished yet
+  %dt size
+  %dd
+    Search for files or directories of a specific size. Examples:
+    .example
+      %code size:>1g
+      for files/directories of more than 1 Gigabytes 
+    .example
+      %code size:<3g
+      for files/directories of less than 3 Gigabytes 
+    .example
+      %code size:5g..15g
+      for files/directories between 5 and 15 Gigabytes 
+
+  %dt objects
+  %dd
+    Search for directories with a specific amount of objects. Examples:
+    .example
+      %code objects:<50
+      for directories with less than 50 objects 
+    .example
+      %code objects:>1k
+      for directories with more than 1024 objects 
+    .example
+      %code objects:30..150
+      for directories with between 50 and 150 objects
+
+  %dt type
+  %dd
+    Restrict the search to files or directories.
+    .example
+      %code type:file
+      only finds files.
+    .example
+      %code type:dir
+      only finds directories.

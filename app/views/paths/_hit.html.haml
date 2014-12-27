@@ -11,4 +11,4 @@
 - if record.objects
   %span.badge= record.objects
 
-  = link_to 'Browse', server_files_path(record.server_id, anchor: "#{record.path == '/' ? '' : record.path[1..-1] << '/'}#{record.name_without_slash}"), class: 'btn btn-xs btn-default'
+  = link_to 'Browse', server_files_path(record.server_id, anchor: "#{record.path == '/' ? '' : record.path[1..-1] << '/'}#{record.name}"), class: 'btn btn-xs btn-default'

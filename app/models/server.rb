@@ -14,16 +14,18 @@ class Server
   field :total_size
 
   require_dependency 'server/metadata'
+  require_dependency 'server/paths'
   include Server::Filelist
   include Server::Locking
   include Server::Metadata
   include Server::State
+  include Server::Paths
   include AsyncHelper
 
   has_many :resources
   
   def data_path
-    Rails.root.join("data/servers/#{id}")
+    Rails.application.config.data_root.join("servers/#{id}")
   end
 
   def update_all

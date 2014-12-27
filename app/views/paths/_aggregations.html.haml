@@ -1,0 +1,16 @@
+- @search.aggregations.each do |agg, results|
+  .panel.panel-default
+    .panel-heading
+      %h3= agg.key.capitalize
+    .panel-body
+      
+      - if value = @search.options[agg.key.to_s]
+        %strong= value
+        = link_to 'show all', merge_query(agg.key, nil), :title => 'remove filter', class: 'btn btn-xs btn-success'
+      - else
+        %ul
+          - results.each do |option|
+            %li
+              %a{ href: url_for(merge_query agg.key, option.to_s) }
+                = option
+                %span.badge.badge-default= option['doc_count']

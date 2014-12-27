@@ -91,33 +91,4 @@ class DirectoryGrapher
     @root.write_recursivly output_dir
   end
 
-  # Insert paths into the database and removes old entries
-  def index!(server)
-    # Insert a new entry
-    create_path = ->(path, name, entry){
-      attr = {
-        server_id: server.id,
-        host:      server.host_ftp,
-        path:      path,
-        name:      name,
-        size:      entry.size,
-        boost:     Math.log(entry.size)
-      }
-      attr[:objects] = entry.count if Dir === entry
-      Path.create attr
-    }
-
-    walk Pathname.new("/") do |pathname, entry|
-      case entry
-      when DirectoryGrapher::File
-        create_path.call pathname.to_s, entry.name, entry
-      when DirectoryGrapher::Dir
-        create_path.call *pathname.split.map(&:to_s), entry
-      else
-        raise "invalid entry: #{entry}"
-      end
-      puts "#{entry.class} #{pathname}/#{entry}"
-    end
-  end
-
 end

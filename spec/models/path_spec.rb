@@ -22,16 +22,16 @@ describe Resource, :elasticsearch do
   end
   
   describe 'search with path' do
-    it { expect(Path.search_within('/not-exists', "nice"   ).results.count).to eq 0 }
-    it { expect(Path.search_within('/folder',     "nice"   ).results.count).to eq 0 }
+    it { expect(PathSearch.new(query: 'path:/not-exists nice').total).to eq 0 }
+    it { expect(PathSearch.new(query: 'path:/folder     nice').total).to eq 0 }
     
-    it { expect(Path.search_within('/sub',        ""       ).results.count).to eq 0 }
-    it { expect(Path.search_within('/Sub',        ""       ).results.count).to eq 2 }
-    it { expect(Path.search_within('/Sub',        "nice"   ).results.count).to eq 1 }
+    it { expect(PathSearch.new(query: 'path:/sub'       ).total).to eq 0 }
+    it { expect(PathSearch.new(query: 'path:/Sub'       ).total).to eq 2 }
+    it { expect(PathSearch.new(query: 'path:/Sub nice'  ).total).to eq 1 }
 
-    it { expect(Path.search_within('/Sub/folder', ""       ).results.count).to eq 1 }
-    it { expect(Path.search_within('/Sub/folder', "nice"   ).results.count).to eq 1 }
-    it { expect(Path.search_within('/Sub/folder', "nothing").results.count).to eq 0 }
+    it { expect(PathSearch.new(query: 'path:/Sub/folder'        ).total).to eq 1 }
+    it { expect(PathSearch.new(query: 'path:/Sub/folder nice'   ).total).to eq 1 }
+    it { expect(PathSearch.new(query: 'path:/Sub/folder nothing').total).to eq 0 }
   end
 
 end

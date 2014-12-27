@@ -3,7 +3,6 @@ class FilesController < ApplicationController
   helper_method :parent
 
   def index
-
   end
 
   protected

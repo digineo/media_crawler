@@ -6,7 +6,7 @@ module Resource::Chunk
   end
   
   def chunk_path
-    Rails.root.join "data/servers/#{server_id}/chunks/#{id}"
+    Rails.application.config.data_root "servers/#{server_id}/chunks/#{id}"
   end
 
   def chunk_exist?

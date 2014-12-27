@@ -13,12 +13,6 @@ module ResourcesHelper
     return unless value
     sprintf "%d:%02d", value/60, value%60
   end
-  
-  def remove_filter_link(field)
-   if @filters[field]
-     link_to 'show all', merge_query(field, nil), :title => 'remove filter', class: 'btn btn-xs btn-success'
-   end
-  end
 
   def merge_query(field, value)
     query = params[:query].to_s.dup

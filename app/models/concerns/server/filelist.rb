@@ -15,10 +15,9 @@ module Server::Filelist
   end
 
   def update_files
-    if download_filelist && parse_filelist
-      self.files_updated_at = Time.now
-      save!
-
+    if download_filelist
+      async :generate_cache
+      async :update_paths
       true
     end
   end
@@ -42,10 +41,10 @@ module Server::Filelist
     # check if last line contains the summarized size
     if size = Subprocess.run('tail', '-n', 1, tmpfile).strip.match(/^(\d+)\t\.$/)
       File.rename tmpfile, filelist_path
-      update_attributes! total_size: size[1]
+      update_attributes! \
+        files_updated_at: Time.now,
+        total_size:       size[1]
 
-      async :generate_graph
-      async :update_paths
       true
     end
   end
@@ -89,26 +88,8 @@ module Server::Filelist
     @graph ||= DirectoryGrapher.new(filelist_path)
   end
 
-  def generate_graph
-    directory_graph.write Rails.root.join("public/data/servers/#{id}")
-  end
-
-  def update_paths
-    delete_paths
-    directory_graph.index!(self)
-  end
-
-  def delete_paths
-    # Remove all entries
-    Path.gateway.client.delete_by_query index: 'paths', body: {
-      query: {
-        filtered: {
-          filter: {
-            term:  { server_id: id.to_s },
-          }
-        }
-      }
-    }
+  def generate_cache
+    directory_graph.write Rails.application.config.public_data_root.join("servers/#{id}")
   end
 
 end

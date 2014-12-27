@@ -7,13 +7,9 @@
       %span.icon-bar
       %span.icon-bar
       %span.icon-bar
-    = link_to "Media Crawler", root_path, class: 'navbar-brand'
+    = link_to "FTP Explorer", root_path, class: 'navbar-brand'
   / Collect the nav links, forms, and other content for toggling
   .collapse.navbar-collapse.navbar-ex8-collapse
     %ul.nav.navbar-nav
-      %li
-        %a{href: root_path} File search
-      %li
-        = link_to 'Media search', :resources
-      %li
-        = link_to 'Servers', :servers
+      %li= link_to 'Servers', :servers
+      %li= link_to 'Usage',   :usage

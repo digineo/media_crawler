@@ -3,6 +3,8 @@ require 'elasticsearch/persistence/model'
 class Path
   include Elasticsearch::Persistence::Model
 
+  index_name "test_#{index_name}" if Rails.env.test?
+
   settings index: {
     number_of_shards: 1,
     number_of_replicas: 0,
@@ -39,6 +41,7 @@ class Path
 
   attribute :server_id, String
   attribute :host,      String
+  attribute :type,      String
   attribute :path,      String, mapping: { analyzer: 'path' }
   attribute :name,      String, mapping: { analyzer: 'filename' }
   attribute :size,      Integer, mapping: { type: 'long' }
@@ -49,16 +52,11 @@ class Path
     self.class === another && another.id == id
   end
 
-  def name_without_slash
-    name[0] == "/" ? name[1..-1] : name
-  end
-
   def url
     url = "ftp://#{host}#{path}"
     url << "/" unless url.ends_with?("/")
-    url << name_without_slash
+    url << name if name
     url
   end
-
 
 end
