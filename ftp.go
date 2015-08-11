@@ -34,17 +34,6 @@ type FileEntry struct {
 	children []*FileEntry
 }
 
-func main() {
-	ftp := CreateFtp(os.Args[1])
-
-	log.Println("Connecting to", ftp.Url)
-	ftp.ConnectLoop()
-	ftp.LoginLoop()
-	defer ftp.Conn.Quit()
-
-	ftp.StartCrawling()
-}
-
 func CreateFtp(url string) (ftp *Ftp) {
 	ftp = &Ftp{
 		Url:      url,
