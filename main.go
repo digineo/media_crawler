@@ -1,25 +1,35 @@
 package main
 
 import (
+	"flag"
 	"log"
+	"net"
 	"os"
+	"time"
+)
+
+var (
+	cacheRoot string
+	hosts     = NewHostmap()
 )
 
 func main() {
+	flag.StringVar(&cacheRoot, "cacheRoot", "", "path to cache root")
+	flag.Parse()
 
-	err := initializeIndex()
-	if err != nil {
-		log.Println(err)
-	} else {
-		log.Print("Index angelegt")
+	if cacheRoot == "" {
+		log.Println("cacheRoot missing", cacheRoot)
+		os.Exit(1)
 	}
 
-	ftp := CreateFtp(os.Args[1])
+	time.Sleep(time.Second)
 
-	log.Println("Connecting to", ftp.Url)
-	ftp.ConnectLoop()
-	ftp.LoginLoop()
-	defer ftp.Conn.Quit()
+	addHost(1, net.ParseIP(flag.Args()[0]))
+	go index.indexWorker()
 
-	ftp.StartCrawling()
+	hosts.Wait()
+
+	close(index.Channel)
+	index.wg.Wait()
+
 }
