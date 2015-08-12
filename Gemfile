@@ -1,11 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails',   '~> 4.2.0'
-gem 'mongoid', '~> 4.0.0'
-
-gem 'streamio-ffmpeg',
-#  github: 'digineo/streamio-ffmpeg'
-  path: '../streamio-ffmpeg'
+gem 'rails', '~> 4.2.0'
+gem 'pg'
 
 gem 'jquery-rails'
 gem 'turbolinks'

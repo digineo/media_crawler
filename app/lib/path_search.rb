@@ -63,7 +63,7 @@ class PathSearch
 
               # document specific boost
               script_score: {
-                script: "doc['boost'].isEmpty() ? 1 : doc['boost'].value"
+                script: "doc['boost'].value"
               }
             }
           },

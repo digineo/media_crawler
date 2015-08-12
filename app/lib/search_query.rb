@@ -19,7 +19,7 @@ class SearchQuery
       Facet::Range.new("1g..10g"),
       Facet::Range.new("10g..100g"),
     ],
-    duration: [ 
+    duration: [
       Facet::Range.new("0..20"),
       Facet::Range.new("20..60"),
       Facet::Range.new("60..120"),

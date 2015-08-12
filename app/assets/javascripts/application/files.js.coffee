@@ -31,9 +31,9 @@ updateTable = ->
   document.title = $("h1").text()
 
   # Load directory content
-  $.getJSON "/data/servers/#{server_id}/#{path}content.json", (data, status, xhr)->
+  $.getJSON "/data/servers/#{server_id}/#{path}index.json", (data, status, xhr)->
     modified = xhr.getResponseHeader("Last-Modified")
-    total   = $.map(data.children, (c)-> c.size).sum() + $.map(data.files, (c)-> c.size).sum()
+    total   = $.map(data, (c)-> c.size).sum()
 
     $modified.text modified
 
@@ -44,19 +44,16 @@ updateTable = ->
     if parts.length
       entries.append("<li><a href='#" + parts[0..-2].join("/") + "' class='folder folder-parent' >Parent Directory</a></li>")
 
-    # Directories
-    for child in data.children
+    for child in data
       tr = $ "<li></li>"
       $(filesizeBar(child.size)).appendTo tr
-      $("<a></a>", href: "##{path}#{child.name}", class: 'folder').text(child.name).appendTo tr
-      tr.append(" <span class='badge'>#{child.count}</span>")
-      tr.appendTo entries
-
-    # Files
-    for child in data.files
-      tr = $ "<li></li>"
-      $(filesizeBar(child.size)).appendTo tr
-      $("<span></span>", class: "file file-#{child.name.split('.').pop()}").text(child.name).appendTo tr
+      if child.type=="folder"
+        # Directory
+        $("<a></a>", href: "##{path}#{child.name}", class: 'folder').text(child.name).appendTo tr
+        tr.append(" <span class='badge'>#{child.count}</span>") if child.count
+      else
+        # File
+        $("<span></span>", class: "file file-#{child.name.split('.').pop()}").text(child.name).appendTo tr
       tr.appendTo entries
 
 $(document).on 'ready page:load', updateTable
