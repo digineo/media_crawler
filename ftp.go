@@ -24,6 +24,7 @@ type Host struct {
 	Address  string
 	Running  bool
 	State    string
+	Error    error
 	Conn     *ftp.ServerConn
 	cacheDir string
 
@@ -65,18 +66,16 @@ func (host *Host) Connect() {
 	host.Running = true
 
 	attempt := 1
-	var err error
 
 	for host.Running {
 		host.SetState(fmt.Sprintf("connecting (attempt %d)", attempt))
 
-		host.Conn, err = ftp.Connect(net.JoinHostPort(host.Address, "21"))
-		if err == nil {
+		host.Conn, host.Error = ftp.Connect(net.JoinHostPort(host.Address, "21"))
+		if host.Error == nil {
 			break
 		}
 
-		host.SetState(fmt.Sprintf("connecting (attempt %d failed): %s", attempt, err.Error()))
-
+		host.SetState(fmt.Sprintf("connecting (attempt %d failed)", attempt))
 		time.Sleep(2 * time.Second)
 		attempt += 1
 	}
@@ -91,22 +90,22 @@ func (host *Host) Login() {
 	for host.Running {
 		host.SetState(fmt.Sprintf("logging in (attempt %d)", attempt))
 
-		err := host.Conn.Login("anonymous", "anonymous")
-		if err == nil {
+		host.Error = host.Conn.Login("anonymous", "anonymous")
+		if host.Error == nil {
 			break
 		}
 
-		host.SetState(fmt.Sprintf("logging in (attempt %d failed): %s", attempt, err.Error()))
-
+		host.SetState(fmt.Sprintf("logging in (attempt %d failed)"))
 		time.Sleep(2 * time.Second)
 		attempt += 1
 	}
 }
 
 // Recursively walk through all directories
-func (host *Host) Crawl() (err error) {
-	pwd, err := host.Conn.CurrentDir()
-	if err != nil {
+func (host *Host) Crawl() {
+	var pwd string
+	pwd, host.Error = host.Conn.CurrentDir()
+	if host.Error != nil {
 		return
 	}
 
@@ -129,10 +128,11 @@ func (host *Host) crawlDirectoryRecursive(dir string) *FileEntry {
 		Type: "dir",
 	}
 
-	list, err := host.Conn.List(dir)
+	var list []*ftp.Entry
+	list, host.Error = host.Conn.List(dir)
 
-	if err != nil {
-		log.Println(err)
+	if host.Error != nil {
+		log.Println(host.Error)
 	}
 
 	// Iterate over directory content
@@ -173,7 +173,7 @@ func (host *Host) crawlDirectoryRecursive(dir string) *FileEntry {
 
 	// Save JSON
 	data, _ := json.Marshal(children)
-	if err = ioutil.WriteFile(path.Join(outputDir, cacheFilename), data, 0644); err != nil {
+	if err := ioutil.WriteFile(path.Join(outputDir, cacheFilename), data, 0644); err != nil {
 		panic(err)
 	}
 
