@@ -31,13 +31,13 @@ module Aggregation
       Facet::Range.new("1g..10g"),
       Facet::Range.new("10g..100g"),
     ]
- 
+
    self.result_clazz = Struct.new(:aggregation, :result) do
      delegate :key, :ranges, to: :aggregation
      delegate :[], to: :result
 
       def to_s
-        [result.from, result.to].map{|v| UnitParser.int_to_str(v.to_i*1024) }.join("..")
+        [result.from, result.to].map{|v| UnitParser.to_str(v.to_i) }.join("..")
       end
    end
 

@@ -31,14 +31,13 @@ module PathSearch::Filter
     end
 
     def str_to_bytes(str)
-      UnitParser.int(str)
+      UnitParser.to_int(str)
     end
   end
 
   class Filesize < Int
     def str_to_bytes(str)
-      # filesize is stored in Kb
-      UnitParser.int(str)/1024
+      UnitParser.to_int(str)
     end
   end
 end

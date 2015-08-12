@@ -1,6 +1,8 @@
 module UnitParser
 
-  def self.duration(value)
+  extend self
+
+  def duration(value)
     if value.include?(":")
       h, m = value.split(":")
       h.to_i * 60 + m.to_i
@@ -8,8 +10,8 @@ module UnitParser
       value.to_i
     end
   end
-  
-  def self.int(value)
+
+  def to_int(value)
     case value
       when /^\d+(\.\d*)?kb?$/i
         value.to_f.kilobytes
@@ -24,7 +26,7 @@ module UnitParser
     end
   end
 
-  def self.int_to_str(val)
+  def to_str(val)
     return 0 if val.to_f == 0.0
     return "#{val/(1024**4)}t" if val % 1024**4 == 0
     return "#{val/(1024**3)}g" if val % 1024**3 == 0
