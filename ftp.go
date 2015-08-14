@@ -94,7 +94,7 @@ func (host *Host) Login() {
 			break
 		}
 
-		host.SetState(fmt.Sprintf("logging in (attempt %d failed)"))
+		host.SetState(fmt.Sprintf("logging in (attempt %d failed)", attempt))
 		time.Sleep(2 * time.Second)
 		attempt += 1
 	}
