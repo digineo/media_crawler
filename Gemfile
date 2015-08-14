@@ -25,6 +25,10 @@ group :development, :test do
   gem 'factory_girl_rails'
 end
 
+group :production do
+  gem 'thin'
+end
+
 group :development do
   gem 'pry-rails'
   gem 'quiet_assets'
@@ -33,4 +37,9 @@ end
 group :test do
   gem 'rspec-its', '~> 1.1'
   gem 'shoulda-matchers'
+end
+
+group :deployment do
+  gem 'capistrano', '~> 3.4'
+  gem 'capistrano-rails'
 end

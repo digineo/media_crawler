@@ -1,0 +1,15 @@
+---
+chdir: "/home/crawler/current"
+environment: production
+timeout: 30
+log: log/thin.log
+pid: tmp/pids/thin.pid
+max_conns: 512
+max_persistent_conns: 100
+require: []
+wait: 30
+threadpool_size: 20
+socket: tmp/sockets/thin.sock
+daemonize: false
+#servers: 3
+
