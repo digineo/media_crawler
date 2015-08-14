@@ -24,6 +24,11 @@ func main() {
 
 	time.Sleep(time.Second)
 
+	// Configure number of system threads
+	gomaxprocs := runtime.NumCPU()
+	runtime.GOMAXPROCS(gomaxprocs)
+	log.Println("Using", gomaxprocs, "operating system threads")
+
 	for _, host := range flag.Args() {
 		hosts.Add(net.ParseIP(host))
 	}
