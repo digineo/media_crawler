@@ -1,8 +1,0 @@
----
-:concurrency: 6
-:pidfile: ./tmp/pids/sidekiq.pid
-:verbose: true
-:timeout: 15
-
-production:
-  :logfile: ./log/sidekiq.log

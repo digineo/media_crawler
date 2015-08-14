@@ -1,5 +1,5 @@
 %h1<
-  = link_to parent.address, '#', id: 'host'
+  = link_to params[:id], '#', id: 'host'
   = "/"
   %span#path
 
@@ -10,5 +10,5 @@
 .row
   = render 'search'
 
-#files{ 'data-server-id' => parent.id }
+#files{ 'data-server-id' => params[:id] }
   %ol.entries

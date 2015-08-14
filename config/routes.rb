@@ -1,16 +1,7 @@
 MediaCrawler::Application.routes.draw do
 
-  resources :hosts
-  resources :resources
-  resources :servers, :only => [:index] do
-    member do
-      get 'filelist'
-    end
-    resources :files, only: :index
-  end
-
-  require 'sidekiq/web'
-  mount Sidekiq::Web => '/sidekiq'
+  get 'servers'     => 'servers#index'
+  get 'servers/:id' => 'files#index', id: /[^\/]+/, as: :server_files
 
   get 'usage'     => 'static#usage'
   get 'resources' => 'resources#index'

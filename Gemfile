@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 4.2.0'
-gem 'pg'
 
 gem 'jquery-rails'
 gem 'turbolinks'
@@ -19,10 +18,6 @@ gem 'kaminari'
 gem 'uglifier',     '>= 2.6'
 gem 'coffee-rails', '~> 4.1'
 gem 'therubyracer',  platforms: :ruby
-
-# Background Jobs
-gem 'sidekiq', '~> 3.3.0'
-gem 'sinatra', require: nil, group: [:development, :production]
 
 group :development, :test do
   gem 'pry-byebug'
