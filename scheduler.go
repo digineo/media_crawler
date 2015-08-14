@@ -13,7 +13,7 @@ func scheduler() {
 
 	hosts.Lock()
 	for _, host := range hosts.entries {
-		if host.Running && time.Since(host.Finished) > scheduleInterval {
+		if !host.Running && time.Since(host.Finished) > scheduleInterval {
 			host.Run()
 		}
 	}
