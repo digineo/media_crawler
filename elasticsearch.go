@@ -110,8 +110,11 @@ func CreateIndex() *Index {
 		Channel: make(chan *Entry, 100),
 		Conn:    elastigo.NewConn(),
 	}
-
 	index.Conn.Domain = "localhost"
+	return index
+}
+
+func (index *Index) DropAndCreate() {
 	index.Conn.DeleteIndex(index.Name)
 
 	_, err := index.Conn.CreateIndexWithSettings(index.Name, indexSettings)
@@ -124,7 +127,6 @@ func CreateIndex() *Index {
 		panic(err)
 	}
 
-	return index
 }
 
 // Enqueue the entry

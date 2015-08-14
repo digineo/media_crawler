@@ -5,16 +5,18 @@ import (
 	"log"
 	"net"
 	"os"
-	"time"
+	"runtime"
 )
 
 var (
-	cacheRoot string
-	hosts     = NewHosts()
+	cacheRoot  string
+	socketPath string
+	hosts      = NewHosts()
 )
 
 func main() {
 	flag.StringVar(&cacheRoot, "cacheRoot", "", "path to cache root")
+	flag.StringVar(&socketPath, "socketPath", "", "path for the unix control socket")
 	flag.Parse()
 
 	if cacheRoot == "" {
@@ -22,7 +24,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	time.Sleep(time.Second)
+	// Start control socket handler
+	if socketPath != "" {
+		go controlSocket()
+	}
 
 	// Configure number of system threads
 	gomaxprocs := runtime.NumCPU()

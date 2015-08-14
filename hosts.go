@@ -55,3 +55,14 @@ func (hosts *Hosts) Remove(address net.IP) {
 		delete(hosts.entries, key)
 	}
 }
+
+func (hosts *Hosts) List() []*Host {
+	hosts.Lock()
+	defer hosts.Unlock()
+
+	list := make([]*Host, 0)
+	for _, host := range hosts.entries {
+		list = append(list, host)
+	}
+	return list
+}

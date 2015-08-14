@@ -18,13 +18,13 @@ const (
 )
 
 type Host struct {
-	Started  time.Time
-	Address  string
-	Running  bool
-	State    string
-	Error    error
-	Conn     *ftp.ServerConn
-	cacheDir string
+	Started    time.Time       `json:"started"`
+	Address    string          `json:"address"`
+	Running    bool            `json:"running"`
+	State      string          `json:"state"`
+	Error      error           `json:"error"`
+	FilesCount int             `json:"files"`
+	Conn       *ftp.ServerConn `json:"-"`
 }
 
 // Stuct for the JSON dump
@@ -155,6 +155,7 @@ func (host *Host) crawlDirectoryRecursive(dir string) *FileEntry {
 			}
 			result.Count += 1
 			result.Size += file.Size
+			host.FilesCount += 1
 			children = append(children, entry)
 		}
 
