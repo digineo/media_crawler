@@ -3,7 +3,6 @@ package main
 import (
 	"net"
 	"sync"
-	"time"
 )
 
 type Hosts struct {
@@ -29,17 +28,7 @@ func (hosts *Hosts) Add(address net.IP) bool {
 	}
 	host := CreateHost(address)
 	hosts.entries[key] = host
-	hosts.wg.Add(1)
-
-	go func() {
-		started := time.Now()
-		host.Connect()
-		host.Login()
-		host.Crawl()
-		host.Conn.Quit()
-		hosts.wg.Done()
-		index.DeleteOutdated(host.Address, started)
-	}()
+	host.Run()
 
 	return true
 }
@@ -65,4 +54,15 @@ func (hosts *Hosts) List() []*Host {
 		list = append(list, host)
 	}
 	return list
+}
+
+func (hosts *Hosts) Requeue() {
+	hosts.Lock()
+	defer hosts.Unlock()
+
+	for _, host := range hosts.entries {
+		if !host.Running {
+			host.Run()
+		}
+	}
 }

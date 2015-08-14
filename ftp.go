@@ -19,6 +19,7 @@ const (
 
 type Host struct {
 	Started    time.Time       `json:"started"`
+	Finished   time.Time       `json:"finished"`
 	Address    string          `json:"address"`
 	Running    bool            `json:"running"`
 	State      string          `json:"state"`
@@ -36,12 +37,12 @@ type FileEntry struct {
 	children []*FileEntry
 }
 
-func CreateHost(address net.IP) (ftp *Host) {
-	ftp = &Host{
+func CreateHost(address net.IP) *Host {
+	host := &Host{
 		Address: address.String(),
+		Running: true,
 	}
-
-	return
+	return host
 }
 
 func (host *Host) CacheDir() string {
@@ -49,7 +50,7 @@ func (host *Host) CacheDir() string {
 }
 
 func (host *Host) SetState(state string) {
-	log.Print(state)
+	log.Println(host.Address, state)
 	host.State = state
 }
 
@@ -57,13 +58,32 @@ func (host *Host) Abort() {
 	host.Running = false
 }
 
+func (host *Host) Run() {
+	host.Running = true
+	hosts.wg.Add(1)
+
+	go func() {
+		host.Error = nil
+		host.Started = time.Now()
+
+		host.Connect()
+		host.Login()
+		host.Crawl()
+		host.Conn.Quit()
+
+		index.DeleteOutdated(host.Address, host.Started)
+
+		host.Finished = time.Now()
+
+		host.Running = false
+		hosts.wg.Done()
+	}()
+}
+
 // Try to connect as long as the server is not obsolete
 // This function does not return errors as high-load FTPs
 // do likely need hundreds of connection retries
 func (host *Host) Connect() {
-	host.Running = true
-	host.Started = time.Now()
-
 	attempt := 1
 
 	for host.Running {
@@ -109,18 +129,17 @@ func (host *Host) Crawl() {
 	}
 
 	host.crawlDirectoryRecursive(pwd)
-
 	host.SetState("crawling finished")
 
 	return
 }
 
-func (host *Host) crawlDirectoryRecursive(dir string) *FileEntry {
+func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
 	host.SetState(fmt.Sprintf("crawling: %s", dir))
 
 	children := make([]*FileEntry, 0, 128)
 	subdirs := make(map[string]bool)
-	result := &FileEntry{
+	result = &FileEntry{
 		Name: filepath.Base(dir),
 		Type: "dir",
 	}
@@ -134,6 +153,10 @@ func (host *Host) crawlDirectoryRecursive(dir string) *FileEntry {
 
 	// Iterate over directory content
 	for _, file := range list {
+		if !host.Running {
+			return
+		}
+
 		ff := path.Join(dir, file.Name)
 		var entry *FileEntry
 
@@ -184,5 +207,5 @@ func (host *Host) crawlDirectoryRecursive(dir string) *FileEntry {
 		}
 	}
 
-	return result
+	return
 }

@@ -45,6 +45,18 @@ func processCommand(command string, input *bufio.Scanner, output *bufio.Writer) 
 	switch command {
 	case "status":
 		str, err = status()
+	case "add":
+		for input.Scan() {
+			if addr := net.ParseIP(input.Text()); addr != nil {
+				hosts.Add(addr)
+			}
+		}
+	case "remove":
+		for input.Scan() {
+			if addr := net.ParseIP(input.Text()); addr != nil {
+				hosts.Remove(addr)
+			}
+		}
 	default:
 		return errors.New("unknown command: " + command)
 	}
