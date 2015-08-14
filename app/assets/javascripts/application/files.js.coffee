@@ -47,7 +47,7 @@ updateTable = ->
     for child in data
       tr = $ "<li></li>"
       $(filesizeBar(child.size)).appendTo tr
-      if child.type=="folder"
+      if child.type=="dir"
         # Directory
         $("<a></a>", href: "##{path}#{child.name}", class: 'folder').text(child.name).appendTo tr
         tr.append(" <span class='badge'>#{child.count}</span>") if child.count

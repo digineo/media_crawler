@@ -12,8 +12,6 @@
   %thead
     %tr
       %th Address
-      %th Indexed files
-      %th Total size
-      %th Checked At
+      %th Crawled at
   %tbody
-    = render collection
+    = render partial: "server", collection: @hosts
