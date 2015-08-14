@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/base64"
+	"fmt"
 	elastigo "github.com/mattbaird/elastigo/lib"
 	"log"
 	"math"
@@ -83,7 +85,6 @@ var mappingOptions = elastigo.MappingOptions{
 }
 
 type Entry struct {
-	ServerId int `json:"server_id"`
 	//Created  time.Time `json:"created"`
 	Address string  `json:"host"`
 	Type    string  `json:"type"`
@@ -127,20 +128,19 @@ func CreateIndex() *Index {
 }
 
 // Enqueue the entry
-func (index *Index) addToIndex(serverId int, address string, folder string, entry *FileEntry) {
+func (index *Index) addToIndex(address string, folder string, entry *FileEntry) {
 	var boost float32
 	if entry.Size > 0 {
 		boost = float32(math.Log(float64(entry.Size)))
 	}
 	index.Channel <- &Entry{
-		ServerId: serverId,
-		Address:  address,
-		Path:     folder,
-		Type:     entry.Type,
-		Name:     entry.Name,
-		Size:     entry.Size,
-		Objects:  entry.Count,
-		Boost:    boost,
+		Address: address,
+		Path:    folder,
+		Type:    entry.Type,
+		Name:    entry.Name,
+		Size:    entry.Size,
+		Objects: entry.Count,
+		Boost:   boost,
 	}
 }
 
@@ -154,25 +154,8 @@ func (index *Index) indexWorker() {
 
 // Look up a FileEntry by filename and size and
 func (index *Index) CreateEntry(entry *Entry) {
-	index.DeleteByBoolFilter([]hash{
-		hash{
-			"term": hash{
-				"server_id": entry.ServerId,
-			},
-		},
-		hash{
-			"term": hash{
-				"path": entry.Path,
-			},
-		},
-		hash{
-			"term": hash{
-				"name": entry.Name,
-			},
-		},
-	})
-
-	_, err := index.Conn.Index(index.Name, index.Mapping, "", nil, entry)
+	docId := base64.URLEncoding.EncodeToString([]byte(fmt.Sprintf("%s/%s/%s", entry.Address, entry.Path, entry.Name)))
+	_, err := index.Conn.Index(index.Name, index.Mapping, docId, nil, entry)
 
 	if err != nil {
 		panic(err)
@@ -181,16 +164,16 @@ func (index *Index) CreateEntry(entry *Entry) {
 	return
 }
 
-func (index *Index) DeleteOutdated(serverId int, before time.Time) {
+func (index *Index) DeleteOutdated(host string, before time.Time) {
 	index.DeleteByBoolFilter([]hash{
 		hash{
 			"term": hash{
-				"ServerId": serverId,
+				"host": host,
 			},
 		},
 		hash{
 			"range": hash{
-				"Created": hash{
+				"updated_at": hash{
 					"lt": before,
 				},
 			},

@@ -10,8 +10,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strconv"
-	"sync"
 	"time"
 )
 
@@ -20,15 +18,13 @@ const (
 )
 
 type Host struct {
-	Id       int
+	Started  time.Time
 	Address  string
 	Running  bool
 	State    string
 	Error    error
 	Conn     *ftp.ServerConn
 	cacheDir string
-
-	mt sync.Mutex
 }
 
 // Stuct for the JSON dump
@@ -40,14 +36,16 @@ type FileEntry struct {
 	children []*FileEntry
 }
 
-func CreateHost(id int, address net.IP) (ftp *Host) {
+func CreateHost(address net.IP) (ftp *Host) {
 	ftp = &Host{
-		Id:       id,
-		Address:  address.String(),
-		cacheDir: path.Join(cacheRoot, strconv.Itoa(id)),
+		Address: address.String(),
 	}
 
 	return
+}
+
+func (host *Host) CacheDir() string {
+	return path.Join(cacheRoot, host.Address)
 }
 
 func (host *Host) SetState(state string) {
@@ -64,6 +62,7 @@ func (host *Host) Abort() {
 // do likely need hundreds of connection retries
 func (host *Host) Connect() {
 	host.Running = true
+	host.Started = time.Now()
 
 	attempt := 1
 
@@ -109,9 +108,7 @@ func (host *Host) Crawl() {
 		return
 	}
 
-	host.mt.Lock()
 	host.crawlDirectoryRecursive(pwd)
-	host.mt.Unlock()
 
 	host.SetState("crawling finished")
 
@@ -163,12 +160,12 @@ func (host *Host) crawlDirectoryRecursive(dir string) *FileEntry {
 
 		// Add to index
 		if entry != nil {
-			index.addToIndex(host.Id, host.Address, dir, entry)
+			index.addToIndex(host.Address, dir, entry)
 		}
 	}
 
 	// Create output directory
-	outputDir := path.Join(host.cacheDir, dir)
+	outputDir := path.Join(host.CacheDir(), dir)
 	os.MkdirAll(outputDir, 0755)
 
 	// Save JSON

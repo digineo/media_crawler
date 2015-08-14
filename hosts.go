@@ -6,30 +6,30 @@ import (
 	"time"
 )
 
-type Hostmap struct {
+type Hosts struct {
 	entries map[string]*Host
+	wg      sync.WaitGroup
 	sync.Mutex
-	sync.WaitGroup
 }
 
-func NewHostmap() *Hostmap {
-	return &Hostmap{
+func NewHosts() *Hosts {
+	return &Hosts{
 		entries: make(map[string]*Host),
 	}
 }
 
-func addHost(id int, address net.IP) bool {
-
+func (hosts *Hosts) Add(address net.IP) bool {
 	key := string(address)
 
 	hosts.Lock()
+	defer hosts.Unlock()
+
 	if _, ok := hosts.entries[key]; ok {
 		return false
 	}
-	host := CreateHost(id, address)
+	host := CreateHost(address)
 	hosts.entries[key] = host
-	hosts.Unlock()
-	hosts.Add(1)
+	hosts.wg.Add(1)
 
 	go func() {
 		started := time.Now()
@@ -37,15 +37,21 @@ func addHost(id int, address net.IP) bool {
 		host.Login()
 		host.Crawl()
 		host.Conn.Quit()
-		hosts.Done()
-		index.DeleteOutdated(host.Id, started)
+		hosts.wg.Done()
+		index.DeleteOutdated(host.Address, started)
 	}()
 
 	return true
 }
 
-func cancelHost(address net.IP) {
-	if host, ok := hosts.entries[string(address)]; ok {
+func (hosts *Hosts) Remove(address net.IP) {
+	key := string(address)
+
+	hosts.Lock()
+	defer hosts.Unlock()
+
+	if host, ok := hosts.entries[key]; ok {
 		host.Abort()
+		delete(hosts.entries, key)
 	}
 }

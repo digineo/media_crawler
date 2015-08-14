@@ -10,7 +10,7 @@ import (
 
 var (
 	cacheRoot string
-	hosts     = NewHostmap()
+	hosts     = NewHosts()
 )
 
 func main() {
@@ -24,10 +24,13 @@ func main() {
 
 	time.Sleep(time.Second)
 
-	addHost(1, net.ParseIP(flag.Args()[0]))
+	for _, host := range flag.Args() {
+		hosts.Add(net.ParseIP(host))
+	}
+
 	go index.indexWorker()
 
-	hosts.Wait()
+	hosts.wg.Wait()
 
 	close(index.Channel)
 	index.wg.Wait()
