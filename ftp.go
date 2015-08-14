@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"syscall"
 	"time"
 )
 
@@ -110,9 +111,14 @@ func (host *Host) Login() {
 		host.SetState(fmt.Sprintf("logging in (attempt %d)", attempt))
 
 		host.Error = host.Conn.Login("anonymous", "anonymous")
+
 		if host.Error == nil {
 			host.SetState(fmt.Sprintf("login successful"))
 			break
+		}
+
+		if host.Error == syscall.EPIPE {
+			return
 		}
 
 		host.SetState(fmt.Sprintf("logging in (attempt %d failed)", attempt))
