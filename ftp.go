@@ -111,6 +111,7 @@ func (host *Host) Login() {
 
 		host.Error = host.Conn.Login("anonymous", "anonymous")
 		if host.Error == nil {
+			host.SetState(fmt.Sprintf("login successful"))
 			break
 		}
 
@@ -148,7 +149,7 @@ func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
 	list, host.Error = host.Conn.List(dir)
 
 	if host.Error != nil {
-		log.Println(host.Error)
+		log.Println(host.Address, host.Error)
 	}
 
 	// Iterate over directory content

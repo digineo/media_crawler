@@ -18,15 +18,23 @@ func NewHosts() *Hosts {
 }
 
 func (hosts *Hosts) Add(address net.IP) bool {
+	var host *Host
 	key := string(address)
 
 	hosts.Lock()
 	defer hosts.Unlock()
 
-	if _, ok := hosts.entries[key]; ok {
-		return false
+	if host, ok := hosts.entries[key]; ok {
+		if host.Running {
+			return false
+		} else {
+			// Run again
+			host.Run()
+			return true
+		}
 	}
-	host := CreateHost(address)
+
+	host = CreateHost(address)
 	hosts.entries[key] = host
 	host.Run()
 
