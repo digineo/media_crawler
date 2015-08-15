@@ -24,6 +24,19 @@ class Server
     @status = status
   end
 
+  def size
+    index_json.map{|i| i['size'] }.sum rescue nil
+  end
+
+  def count
+    index_json.map{|i| i['count'] }.sum rescue nil
+  end
+
+
+  def index_json
+    JSON.parse(path.join("index.json").read) || {}
+  end
+
   def address
     path.basename.to_s
   end
