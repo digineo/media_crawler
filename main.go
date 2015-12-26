@@ -6,7 +6,6 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"runtime"
 	"syscall"
 )
 
@@ -31,11 +30,6 @@ func main() {
 		go controlSocket()
 		go scheduler()
 	}
-
-	// Configure number of system threads
-	gomaxprocs := runtime.NumCPU()
-	runtime.GOMAXPROCS(gomaxprocs)
-	log.Println("Using", gomaxprocs, "operating system threads")
 
 	// Start index routine
 	go index.indexWorker()
