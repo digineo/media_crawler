@@ -5,19 +5,19 @@ import (
 )
 
 var (
-	scheduleInterval = time.Hour
+	recrawlAfter = time.Hour
 )
 
-// schedules outdated hosts
+// schedules the recrawling of outdated hosts
 func scheduler() {
-
 	hosts.Lock()
+	defer hosts.Unlock()
+
 	for _, host := range hosts.entries {
-		if !host.Running && time.Since(host.Finished) > scheduleInterval {
+		if !host.Running && time.Since(host.Finished) > recrawlAfter {
 			host.Run()
 		}
 	}
-	defer hosts.Unlock()
 
 	time.AfterFunc(time.Minute, scheduler)
 }
