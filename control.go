@@ -9,17 +9,20 @@ import (
 	"os"
 )
 
-func controlSocket() {
+var controlSocket net.Listener
+
+func newControlSocket() {
 	log.Println("Starting control socket at", socketPath)
 	os.Remove(socketPath)
 
-	l, err := net.Listen("unix", socketPath)
+	var err error
+	controlSocket, err := net.Listen("unix", socketPath)
 	if err != nil {
 		log.Fatal("listen error:", err)
 	}
 
 	for {
-		fd, err := l.Accept()
+		fd, err := controlSocket.Accept()
 		if err != nil {
 			log.Fatal("accept error:", err)
 		}

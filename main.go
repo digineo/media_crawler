@@ -19,6 +19,7 @@ func main() {
 	flag.StringVar(&cacheRoot, "cacheRoot", "", "path to cache root")
 	flag.StringVar(&socketPath, "socketPath", "", "path for the unix control socket")
 	flag.Parse()
+	args := flag.Args()
 
 	if cacheRoot == "" {
 		log.Println("cacheRoot missing", cacheRoot)
@@ -27,14 +28,15 @@ func main() {
 
 	// Start control socket handler
 	if socketPath != "" {
-		go controlSocket()
+		go newControlSocket()
 		go scheduler()
 	}
 
 	// Start index routine
 	go index.indexWorker()
 
-	for _, host := range flag.Args() {
+	// Any work to do?
+	for _, host := range args {
 		hosts.Add(net.ParseIP(host))
 	}
 
@@ -46,8 +48,12 @@ func main() {
 		log.Println("received", sig)
 	}
 
-	if len(flag.Args()) > 0 {
+	if len(args) > 0 {
 		hosts.wg.Wait()
+	}
+
+	if controlSocket != nil {
+		controlSocket.Close()
 	}
 
 	close(index.Channel)
