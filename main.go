@@ -28,7 +28,7 @@ func main() {
 
 	// Start control socket handler
 	if socketPath != "" {
-		go newControlSocket()
+		newControlSocket()
 		go scheduler()
 	}
 
