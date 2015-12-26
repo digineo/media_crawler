@@ -23,23 +23,25 @@ func newControlSocket() {
 
 	go func() {
 		for {
-			fd, err := controlSocket.Accept()
-			if err != nil {
+			if fd, err := controlSocket.Accept(); err != nil {
 				log.Fatal("accept error:", err)
+			} else {
+				go handleControlConn(fd)
 			}
-
-			go func() {
-				input := bufio.NewScanner(fd)
-				output := bufio.NewWriter(fd)
-				input.Scan()
-				if err = processCommand(input.Text(), input, output); err != nil {
-					output.WriteString(err.Error() + "\n")
-				}
-				output.Flush()
-				fd.Close()
-			}()
 		}
 	}()
+}
+
+func handleControlConn(fd net.Conn) {
+	defer fd.Close()
+
+	input := bufio.NewScanner(fd)
+	output := bufio.NewWriter(fd)
+	input.Scan()
+	if err := processCommand(input.Text(), input, output); err != nil {
+		output.WriteString(err.Error() + "\n")
+	}
+	output.Flush()
 }
 
 func processCommand(command string, input *bufio.Scanner, output *bufio.Writer) error {
