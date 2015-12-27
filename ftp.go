@@ -169,6 +169,9 @@ func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
 
 		switch file.Type {
 		case ftp.EntryTypeFolder:
+			if file.Name == "." || file.Name == ".." {
+				continue
+			}
 			if file.Name != cacheFilename {
 				entry = host.crawlDirectoryRecursive(ff)
 				result.Count += entry.Count
