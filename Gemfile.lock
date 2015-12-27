@@ -59,6 +59,9 @@ GEM
     capistrano-rails (1.1.5)
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
+    capistrano-thin (1.2.0)
+      capistrano (~> 3.0)
+      thin (~> 1.6)
     coderay (1.1.0)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
@@ -262,6 +265,7 @@ DEPENDENCIES
   bootstrap-sass (~> 3.2)
   capistrano (~> 3.4)
   capistrano-rails
+  capistrano-thin
   coffee-rails (~> 4.1)
   elasticsearch (~> 1.0.6)
   elasticsearch-model

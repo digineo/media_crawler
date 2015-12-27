@@ -12,4 +12,3 @@ threadpool_size: 20
 socket: tmp/sockets/thin.sock
 daemonize: false
 #servers: 3
-

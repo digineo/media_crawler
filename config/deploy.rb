@@ -27,12 +27,4 @@ set :ssh_options,    user: fetch(:application)
 set :bundle_flags,   '--deployment --quiet --retry 3 --jobs 4'
 set :bundle_without, 'development deployment test'
 
-after 'deploy:publishing', 'deploy:restart'
-
-namespace :deploy do
-  task :restart do
-    on roles(:web) do
-      execute "pkill -f thin"
-    end
-  end
-end
+after 'deploy:publishing', 'thin:restart'

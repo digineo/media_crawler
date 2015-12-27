@@ -42,4 +42,5 @@ end
 group :deployment do
   gem 'capistrano', '~> 3.4'
   gem 'capistrano-rails'
+  gem 'capistrano-thin'
 end
