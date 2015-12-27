@@ -196,10 +196,19 @@ func (index *Index) DeleteByBoolFilter(filter []hash) {
 			},
 		},
 	}
+	scroll := hash{"scroll": "1m"}
 
-	_, err := index.Conn.DeleteByQuery([]string{index.Name}, []string{index.Mapping}, nil, query)
+	result, err := index.Conn.Search(index.Name, "", scroll, query)
+	scrollId := result.ScrollId
+
+	for err == nil && result.Hits.Len() > 0 {
+		for _, hit := range result.Hits.Hits {
+			index.Conn.Delete(index.Name, hit.Type, hit.Id, nil)
+		}
+		result, err = index.Conn.Scroll(scroll, scrollId)
+	}
 
 	if err != nil {
-		log.Panic(err)
+		log.Println(err)
 	}
 }
