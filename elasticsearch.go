@@ -206,7 +206,7 @@ func (index *Index) DeleteByBoolFilter(filter []hash) {
 			},
 		},
 	}
-	scroll := hash{"scroll": "1m"}
+	scroll := hash{"scroll": "10s"}
 
 	result, err := index.Conn.Search(index.Name, "", scroll, query)
 	scrollId := result.ScrollId
