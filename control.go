@@ -59,10 +59,16 @@ func processCommand(command string, input *bufio.Scanner, output *bufio.Writer) 
 			}
 		}
 	case "remove":
+		// remove from crawling
 		for input.Scan() {
 			if addr := net.ParseIP(input.Text()); addr != nil {
 				hosts.Remove(addr)
 			}
+		}
+	case "delete":
+		// delete host from index
+		for input.Scan() {
+			index.DeleteAll(input.Text())
 		}
 	default:
 		return errors.New("unknown command: " + command)

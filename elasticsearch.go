@@ -166,6 +166,16 @@ func (index *Index) CreateEntry(entry *Entry) {
 	return
 }
 
+func (index *Index) DeleteAll(host string) {
+	index.DeleteByBoolFilter([]hash{
+		hash{
+			"term": hash{
+				"host": host,
+			},
+		},
+	})
+}
+
 func (index *Index) DeleteOutdated(host string, before time.Time) {
 	index.DeleteByBoolFilter([]hash{
 		hash{
