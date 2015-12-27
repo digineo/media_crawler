@@ -1,6 +1,6 @@
 class Server
 
-  SOCKET = Rails.root.join("tmp/sockets/control.sock").to_s
+  SOCKET = Rails.root.join("tmp/sockets/crawler.sock").to_s
 
   def self.all
     status = self.status['hosts'] rescue []
