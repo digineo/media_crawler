@@ -3,7 +3,7 @@ class Server
   SOCKET = Rails.root.join("tmp/sockets/control.sock").to_s
 
   def self.all
-    status = self.status['hosts'] rescue {"hosts" => []}
+    status = self.status['hosts'] rescue []
 
     MediaCrawler::Application.config.public_data_root.join("servers").children.map do |path|
       Server.new path, status.find{|s| s["address"] == path.basename.to_s }
