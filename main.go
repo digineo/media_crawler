@@ -10,14 +10,16 @@ import (
 )
 
 var (
-	cacheRoot  string
-	socketPath string
-	hosts      = NewHosts()
+	cacheRoot    string
+	socketPath   string
+	indexWorkers = 2
+	hosts        = NewHosts()
 )
 
 func main() {
 	flag.StringVar(&cacheRoot, "cacheRoot", "", "path to cache root")
 	flag.StringVar(&socketPath, "socketPath", "", "path for the unix control socket")
+	flag.IntVar(&indexWorkers, "indexWorkers", 2, "Number of index workers")
 	flag.Parse()
 	args := flag.Args()
 
@@ -33,7 +35,7 @@ func main() {
 	}
 
 	// Start index routine
-	go index.indexWorker()
+	index.startWorkers(indexWorkers)
 
 	// Any work to do?
 	for _, host := range args {

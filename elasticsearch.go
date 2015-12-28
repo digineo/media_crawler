@@ -146,6 +146,12 @@ func (index *Index) addToIndex(address string, folder string, entry *FileEntry) 
 	}
 }
 
+func (index *Index) startWorkers(count int) {
+	for i := 0; i < count; i++ {
+		go index.indexWorker()
+	}
+}
+
 func (index *Index) indexWorker() {
 	index.wg.Add(1)
 	for entry := range index.Channel {
