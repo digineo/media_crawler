@@ -141,11 +141,41 @@ func (host *Host) Crawl() {
 	return
 }
 
+// Store entries to cache and index
+func storeEntries(host *Host, dir string, children []*FileEntry) {
+	subdirs := make(map[string]bool)
+
+	for _, entry := range children {
+		if entry.Type != "file" {
+			subdirs[entry.Name] = true
+		}
+		index.addToIndex(host.Address, dir, entry)
+	}
+
+	// Create output directory
+	outputDir := path.Join(host.CacheDir(), dir)
+	os.MkdirAll(outputDir, 0755)
+
+	// Save JSON
+	data, _ := json.Marshal(children)
+	if err := ioutil.WriteFile(path.Join(outputDir, cacheFilename), data, 0644); err != nil {
+		panic(err)
+	}
+
+	// Remove subdirectories that does not exist on the server any more
+	files, _ := ioutil.ReadDir(outputDir)
+	for _, file := range files {
+		name := file.Name()
+		if _, ok := subdirs[name]; !ok && name != cacheFilename {
+			os.RemoveAll(path.Join(outputDir, name))
+		}
+	}
+}
+
 func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
 	host.SetState(fmt.Sprintf("crawling: %s", dir))
 
 	children := make([]*FileEntry, 0, 128)
-	subdirs := make(map[string]bool)
 	result = &FileEntry{
 		Name: filepath.Base(dir),
 		Type: "dir",
@@ -177,7 +207,6 @@ func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
 				result.Count += entry.Count
 				result.Size += entry.Size
 				children = append(children, entry)
-				subdirs[file.Name] = true
 			}
 
 		case ftp.EntryTypeFile:
@@ -191,31 +220,9 @@ func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
 			host.FilesCount += 1
 			children = append(children, entry)
 		}
-
-		// Add to index
-		if entry != nil {
-			index.addToIndex(host.Address, dir, entry)
-		}
 	}
 
-	// Create output directory
-	outputDir := path.Join(host.CacheDir(), dir)
-	os.MkdirAll(outputDir, 0755)
-
-	// Save JSON
-	data, _ := json.Marshal(children)
-	if err := ioutil.WriteFile(path.Join(outputDir, cacheFilename), data, 0644); err != nil {
-		panic(err)
-	}
-
-	// Remove subdirectories that does not exist on the server any more
-	files, _ := ioutil.ReadDir(outputDir)
-	for _, f := range files {
-		name := f.Name()
-		if _, ok := subdirs[name]; !ok && name != cacheFilename {
-			os.RemoveAll(path.Join(outputDir, name))
-		}
-	}
+	storeEntries(host, dir, children)
 
 	return
 }
