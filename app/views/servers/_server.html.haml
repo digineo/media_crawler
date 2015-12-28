@@ -5,6 +5,7 @@
     = server.count
   %td
     = link_to "ftp://#{server}/", "ftp://#{server}/"
+  %td
     - if server.updated_at
       = link_to 'Browse Cache', server_files_path(server), class: 'btn btn-xs btn-primary'
   %td
