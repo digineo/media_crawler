@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jlaffaye/ftp"
 	"io/ioutil"
 	"log"
 	"net"
@@ -12,6 +11,8 @@ import (
 	"path/filepath"
 	"syscall"
 	"time"
+
+	"github.com/jlaffaye/ftp"
 )
 
 const (
@@ -50,7 +51,8 @@ func (host *Host) CacheDir() string {
 	return path.Join(cacheRoot, host.Address)
 }
 
-func (host *Host) SetState(state string) {
+func (host *Host) SetState(format string, a ...interface{}) {
+	state := fmt.Sprintf(format, a...)
 	log.Println(host.Address, state)
 	host.State = state
 }
@@ -88,14 +90,14 @@ func (host *Host) Connect() {
 	attempt := 1
 
 	for host.Running {
-		host.SetState(fmt.Sprintf("connecting (attempt %d)", attempt))
+		host.SetState("connecting (attempt %d)", attempt)
 
 		host.Conn, host.Error = ftp.Connect(net.JoinHostPort(host.Address, "21"))
 		if host.Error == nil {
 			break
 		}
 
-		host.SetState(fmt.Sprintf("connecting (attempt %d failed)", attempt))
+		host.SetState("connecting (attempt %d failed)", attempt)
 		time.Sleep(2 * time.Second)
 		attempt += 1
 	}
@@ -108,12 +110,12 @@ func (host *Host) Login() {
 	attempt := 1
 
 	for host.Running {
-		host.SetState(fmt.Sprintf("logging in (attempt %d)", attempt))
+		host.SetState("logging in (attempt %d)", attempt)
 
 		host.Error = host.Conn.Login("anonymous", "anonymous")
 
 		if host.Error == nil {
-			host.SetState(fmt.Sprintf("login successful"))
+			host.SetState("login successful")
 			break
 		}
 
@@ -121,7 +123,7 @@ func (host *Host) Login() {
 			return
 		}
 
-		host.SetState(fmt.Sprintf("logging in (attempt %d failed)", attempt))
+		host.SetState("logging in (attempt %d failed)", attempt)
 		time.Sleep(2 * time.Second)
 		attempt += 1
 	}
@@ -173,7 +175,7 @@ func storeEntries(host *Host, dir string, children []*FileEntry) {
 }
 
 func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
-	host.SetState(fmt.Sprintf("crawling: %s", dir))
+	host.SetState("crawling: %s", dir)
 
 	children := make([]*FileEntry, 0, 128)
 	result = &FileEntry{
