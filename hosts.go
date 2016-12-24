@@ -8,7 +8,7 @@ import (
 type Hosts struct {
 	entries map[string]*Host
 	wg      sync.WaitGroup
-	sync.Mutex
+	sync.RWMutex
 }
 
 func NewHosts() *Hosts {
@@ -54,8 +54,8 @@ func (hosts *Hosts) Remove(address net.IP) {
 }
 
 func (hosts *Hosts) List() []*Host {
-	hosts.Lock()
-	defer hosts.Unlock()
+	hosts.RLock()
+	defer hosts.RUnlock()
 
 	list := make([]*Host, 0)
 	for _, host := range hosts.entries {
