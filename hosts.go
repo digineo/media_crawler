@@ -78,3 +78,11 @@ func (hosts *Hosts) Requeue() {
 		}
 	}
 }
+
+func (hosts *Hosts) Recrawl() {
+	hosts.Lock()
+	for _, host := range hosts.entries {
+		host.RecrawlIfDesired()
+	}
+	hosts.Unlock()
+}

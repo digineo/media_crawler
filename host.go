@@ -16,22 +16,25 @@ import (
 )
 
 const (
-	cacheFilename        = "index.json" // folders with this name are ignored
+	cacheFilename        = "index.json"   // folders with this name are ignored
+	csvFilename          = "index.csv.gz" // all folders and subfolders
 	entryTypeFile        = "file"
 	entryTypeDirectory   = "dir"
 	connectRetryInterval = time.Second * 2
 	loginRetryInterval   = time.Second * 2
+	recrawlAfter         = time.Hour
 )
 
 type Host struct {
-	Started    time.Time `json:"started"`
-	Finished   time.Time `json:"finished"`
-	Address    string    `json:"address"` // IP address
-	Running    bool      `json:"running"`
-	State      string    `json:"state"`
-	Error      error     `json:"error"`       // the last FTP error
-	TotalCount uint      `json:"total_count"` // total number of files
-	TotalSize  uint64    `json:"total_size"`  // total size of files
+	Started    time.Time  `json:"started"`  // Start of the last or running crawl
+	Finished   *time.Time `json:"finished"` // Last time of successfull crawl
+	Address    string     `json:"address"`  // IP address
+	Running    bool       `json:"running"`
+	State      string     `json:"state"`
+	Error      error      `json:"error"`       // the last FTP error
+	TotalCount uint       `json:"total_count"` // total number of files
+	TotalSize  uint64     `json:"total_size"`  // total size of files
+	csvWriter  *CsvWriter
 	conn       *ftp.ServerConn
 }
 
@@ -99,7 +102,8 @@ func (host *Host) run() {
 
 	index.DeleteOutdated(host.Address, host.Started)
 
-	host.Finished = time.Now()
+	now := time.Now()
+	host.Finished = &now
 	host.Running = false
 }
 
@@ -149,17 +153,43 @@ func (host *Host) Login() {
 	}
 }
 
+func (host *Host) RecrawlIfDesired() bool {
+	if host.Running || host.Finished == nil || time.Since(*host.Finished) < recrawlAfter {
+		return false
+	}
+	host.Run()
+	return true
+}
+
 // Recursively walk through all directories
 func (host *Host) Crawl() {
 	var pwd string
+	var err error
 	pwd, host.Error = host.conn.CurrentDir()
 	if host.Error != nil {
 		return
 	}
 
-	host.crawlDirectoryRecursive(pwd)
-	host.setState("crawling finished")
+	// Ensure output directory exists
+	os.MkdirAll(host.cacheDir(), 0755)
 
+	host.csvWriter, _ = NewCsvWriter(path.Join(host.cacheDir(), csvFilename))
+	if err != nil {
+		log.Println("unable to create CsvWriter:", err)
+	}
+	host.crawlDirectoryRecursive(pwd)
+
+	// Finalize CSV
+	if host.csvWriter != nil {
+		if host.Error == nil {
+			host.csvWriter.Close()
+		} else {
+			host.csvWriter.Cancel()
+		}
+		host.csvWriter = nil
+	}
+
+	host.setState("crawling finished")
 	return
 }
 
@@ -173,6 +203,9 @@ func storeEntries(host *Host, dir string, children []*FileEntry) {
 			subdirs[entry.Name] = true
 		}
 		index.addToIndex(host.Address, dir, entry)
+		if host.csvWriter != nil {
+			host.csvWriter.Write(dir, entry)
+		}
 	}
 
 	// Create output directory
@@ -180,9 +213,11 @@ func storeEntries(host *Host, dir string, children []*FileEntry) {
 	os.MkdirAll(outputDir, 0755)
 
 	// Save JSON
-	data, _ := json.Marshal(children)
-	if err := ioutil.WriteFile(path.Join(outputDir, cacheFilename), data, 0644); err != nil {
+	if file, err := os.OpenFile(path.Join(outputDir, cacheFilename), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644); err != nil {
 		panic(err)
+	} else {
+		json.NewEncoder(file).Encode(children)
+		file.Close()
 	}
 
 	// Remove subdirectories that does not exist on the server any more
