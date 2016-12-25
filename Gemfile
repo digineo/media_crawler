@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 4.2.0'
+gem 'rails', '~> 5.0'
 
 gem 'jquery-rails'
 gem 'turbolinks'
@@ -9,19 +9,18 @@ gem 'haml-rails'
 gem 'sass-rails',          '~> 5.0'
 gem 'bootstrap-sass',      '~> 3.2'
 
-gem 'elasticsearch',       '~> 1.0.6'
 gem 'elasticsearch-rails'
 gem 'elasticsearch-model'
 gem 'elasticsearch-persistence'
 gem 'kaminari'
 
 gem 'uglifier',     '>= 2.6'
-gem 'coffee-rails', '~> 4.1'
+gem 'coffee-rails'
 gem 'therubyracer',  platforms: :ruby
 
 group :development, :test do
   gem 'pry-byebug'
-  gem 'rspec-rails', '~> 3.1.0'
+  gem 'rspec-rails', '~> 3.1'
   gem 'factory_girl_rails'
 end
 
@@ -31,7 +30,6 @@ end
 
 group :development do
   gem 'pry-rails'
-  gem 'quiet_assets'
 end
 
 group :test do
@@ -40,7 +38,7 @@ group :test do
 end
 
 group :deployment do
-  gem 'capistrano', '~> 3.4'
+  gem 'capistrano', '~> 3.5'
   gem 'capistrano-rails'
   gem 'capistrano-thin'
 end
