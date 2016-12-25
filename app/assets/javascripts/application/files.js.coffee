@@ -31,7 +31,7 @@ updateTable = ->
   document.title = $("h1").text()
 
   # Load directory content
-  $.getJSON "/data/servers/#{server_id}/#{path}index.json", (data, status, xhr)->
+  $.getJSON "/data/#{server_id}/#{path}index.json", (data, status, xhr)->
     modified = xhr.getResponseHeader("Last-Modified")
     total   = $.map(data, (c)-> c.size).sum()
 

@@ -1,8 +1,8 @@
 %tr
   %td
-    .filesize= server.size || 0
+    .filesize= server.size || "n/a"
   %td.text-right
-    = server.count
+    = server.count || "n/a"
   %td
     = link_to "ftp://#{server}/", "ftp://#{server}/"
   %td
@@ -11,4 +11,4 @@
   %td
     = server.updated_at ? "#{time_ago_in_words(server.updated_at)} ago" : 'never'
   %td
-    = server.status["state"] rescue nil
+    = server.status["state"] rescue "n/a"

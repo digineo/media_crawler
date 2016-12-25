@@ -5,14 +5,18 @@ class Server
   def self.all
     status = self.status['hosts'] rescue []
 
-    MediaCrawler::Application.config.public_data_root.join("servers").children.map do |path|
+    MediaCrawler::Application.config.data_root.children.map do |path|
       Server.new path, status.find{|s| s["address"] == path.basename.to_s }
     end
   end
 
   def self.status
+    query("status")
+  end
+
+  def self.query(command)
     sock = UNIXSocket.new SOCKET
-    sock.write "status"
+    sock.write command
     sock.close_write
     JSON.parse sock.read
   end
@@ -20,18 +24,22 @@ class Server
   attr_reader :path, :status
 
   def initialize(path, status)
+    @name   = path.basename.to_s
     @path   = path
-    @status = status
+    @status = status || {}
+  end
+
+  def add
+    self.class.query("add\n#{@name}")
   end
 
   def size
-    index_json.map{|i| i['size'] }.sum rescue nil
+    index_json.map{|i| i['size'] }.sum rescue @status['total_size']
   end
 
   def count
-    index_json.map{|i| i['count'] }.sum rescue nil
+    index_json.map{|i| i['count'] }.sum rescue @status['total_count']
   end
-
 
   def index_json
     JSON.parse(path.join("index.json").read) || {}
