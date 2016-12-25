@@ -3,16 +3,17 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	elastigo "github.com/mattbaird/elastigo/lib"
 	"log"
 	"math"
 	"sync"
 	"time"
+
+	elastigo "github.com/mattbaird/elastigo/lib"
 )
 
 type hash map[string]interface{}
 
-var index = CreateIndex()
+var index = createIndex()
 
 var indexSettings = hash{
 	"index": hash{
@@ -91,7 +92,7 @@ type Entry struct {
 	Path    string  `json:"path"`
 	Name    string  `json:"name"`
 	Size    uint64  `json:"size"`
-	Objects int     `json:"objects"`
+	Objects uint    `json:"objects"`
 	Boost   float32 `json:"boost"`
 }
 
@@ -103,7 +104,7 @@ type Index struct {
 	wg      sync.WaitGroup
 }
 
-func CreateIndex() *Index {
+func createIndex() *Index {
 	index := &Index{
 		Name:    "crawler",
 		Mapping: "path",
@@ -114,6 +115,7 @@ func CreateIndex() *Index {
 	return index
 }
 
+// DropAndCreate recreates the index.
 func (index *Index) DropAndCreate() {
 	index.Conn.DeleteIndex(index.Name)
 
@@ -133,6 +135,7 @@ func (index *Index) DropAndCreate() {
 func (index *Index) addToIndex(address string, folder string, entry *FileEntry) {
 	var boost float32
 	if entry.Size > 0 {
+		// add boost depending on the file size
 		boost = float32(math.Log(float64(entry.Size)))
 	}
 	index.Channel <- &Entry{
@@ -160,10 +163,10 @@ func (index *Index) indexWorker() {
 	index.wg.Done()
 }
 
-// Look up a FileEntry by filename and size and
+// CreateEntry adds the entry to the index or updates it
 func (index *Index) CreateEntry(entry *Entry) {
-	docId := base64.URLEncoding.EncodeToString([]byte(fmt.Sprintf("%s/%s/%s", entry.Address, entry.Path, entry.Name)))
-	_, err := index.Conn.Index(index.Name, index.Mapping, docId, nil, entry)
+	docID := base64.URLEncoding.EncodeToString([]byte(fmt.Sprintf("%s/%s/%s", entry.Address, entry.Path, entry.Name)))
+	_, err := index.Conn.Index(index.Name, index.Mapping, docID, nil, entry)
 
 	if err != nil {
 		panic(err)
@@ -215,13 +218,13 @@ func (index *Index) DeleteByBoolFilter(filter []hash) {
 	scroll := hash{"scroll": "10s"}
 
 	result, err := index.Conn.Search(index.Name, "", scroll, query)
-	scrollId := result.ScrollId
+	scrollID := result.ScrollId
 
 	for err == nil && result.Hits.Len() > 0 {
 		for _, hit := range result.Hits.Hits {
 			index.Conn.Delete(index.Name, hit.Type, hit.Id, nil)
 		}
-		result, err = index.Conn.Scroll(scroll, scrollId)
+		result, err = index.Conn.Scroll(scroll, scrollID)
 	}
 
 	if err != nil {

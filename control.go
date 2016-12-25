@@ -3,13 +3,23 @@ package main
 import (
 	"bufio"
 	"encoding/json"
-	"errors"
 	"log"
 	"net"
 	"os"
 )
 
-var controlSocket net.Listener
+type command func(*bufio.Scanner) interface{}
+
+var (
+	controlSocket net.Listener
+
+	commands = map[string]command{
+		"status": cmdStatus,
+		"add":    cmdAdd,
+		"remove": cmdRemove,
+		"delete": cmdDelete,
+	}
+)
 
 func newControlSocket() {
 	log.Println("Starting control socket at", socketPath)
@@ -38,60 +48,63 @@ func handleControlConn(fd net.Conn) {
 	input := bufio.NewScanner(fd)
 	output := bufio.NewWriter(fd)
 	input.Scan()
-	if err := processCommand(input.Text(), input, output); err != nil {
-		output.WriteString(err.Error() + "\n")
-	}
+	processCommand(input.Text(), input, output)
 	output.Flush()
 }
 
-func processCommand(command string, input *bufio.Scanner, output *bufio.Writer) error {
+func processCommand(name string, input *bufio.Scanner, output *bufio.Writer) {
+	var result interface{}
 
-	var str []byte
-	var err error
+	// lookup function
+	if cmd := commands[name]; cmd != nil {
+		result = cmd(input)
 
-	switch command {
-	case "status":
-		str, err = status()
-	case "add":
-		for input.Scan() {
-			if addr := net.ParseIP(input.Text()); addr != nil {
-				hosts.Add(addr)
+		// empty result?
+		if result == nil {
+			result = hash{
+				"result": true,
 			}
 		}
-	case "remove":
-		// remove from crawling
-		for input.Scan() {
-			if addr := net.ParseIP(input.Text()); addr != nil {
-				hosts.Remove(addr)
-			}
+	} else {
+		// function not found
+		result = hash{
+			"error": "unknown command: " + name,
 		}
-	case "delete":
-		// delete host from index
-		for input.Scan() {
-			index.DeleteAll(input.Text())
-		}
-	default:
-		return errors.New("unknown command: " + command)
 	}
 
-	if err != nil {
-		return err
-	}
-	if str != nil {
-		_, err = output.Write(str)
-		if err != nil {
-			return err
-		}
-		output.Write([]byte("\n"))
-	}
-
-	return nil
+	json.NewEncoder(output).Encode(result)
 }
 
 // Returns the worker and cache status as JSON
-func status() ([]byte, error) {
-	m := make(map[string]interface{})
-	m["hosts"] = hosts.List()
+func cmdStatus(input *bufio.Scanner) interface{} {
+	return hash{
+		"hosts": hosts.List(),
+	}
+}
 
-	return json.Marshal(m)
+func cmdAdd(input *bufio.Scanner) interface{} {
+	for input.Scan() {
+		if addr := net.ParseIP(input.Text()); addr != nil {
+			hosts.Add(addr)
+		}
+	}
+	return nil
+}
+
+// Removes host and stops crawling, but does not delete from the index.
+func cmdRemove(input *bufio.Scanner) interface{} {
+	for input.Scan() {
+		if addr := net.ParseIP(input.Text()); addr != nil {
+			hosts.Remove(addr)
+		}
+	}
+	return nil
+}
+
+// Deletes host from index
+func cmdDelete(input *bufio.Scanner) interface{} {
+	for input.Scan() {
+		index.DeleteAll(input.Text())
+	}
+	return nil
 }

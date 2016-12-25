@@ -16,106 +16,126 @@ import (
 )
 
 const (
-	cacheFilename = "index.json" // folders with this name are ignored
+	cacheFilename        = "index.json" // folders with this name are ignored
+	entryTypeFile        = "file"
+	entryTypeDirectory   = "dir"
+	connectRetryInterval = time.Second * 2
+	loginRetryInterval   = time.Second * 2
 )
 
 type Host struct {
-	Started    time.Time       `json:"started"`
-	Finished   time.Time       `json:"finished"`
-	Address    string          `json:"address"`
-	Running    bool            `json:"running"`
-	State      string          `json:"state"`
-	Error      error           `json:"error"`
-	FilesCount int             `json:"files"`
-	Conn       *ftp.ServerConn `json:"-"`
+	Started    time.Time `json:"started"`
+	Finished   time.Time `json:"finished"`
+	Address    string    `json:"address"` // IP address
+	Running    bool      `json:"running"`
+	State      string    `json:"state"`
+	Error      error     `json:"error"`       // the last FTP error
+	TotalCount uint      `json:"total_count"` // total number of files
+	TotalSize  uint64    `json:"total_size"`  // total size of files
+	conn       *ftp.ServerConn
 }
 
 // Stuct for the JSON dump
 type FileEntry struct {
 	Name     string `json:"name"`
 	Size     uint64 `json:"size"`
-	Count    int    `json:"count,omitempty"`
+	Count    uint   `json:"count,omitempty"`
 	Type     string `json:"type"`
 	children []*FileEntry
 }
 
 func CreateHost(address net.IP) *Host {
-	host := &Host{
+	return &Host{
 		Address: address.String(),
-		Running: true,
 	}
-	return host
 }
 
-func (host *Host) CacheDir() string {
+func (host *Host) cacheDir() string {
 	return path.Join(cacheRoot, host.Address)
 }
 
-func (host *Host) SetState(format string, a ...interface{}) {
+func (host *Host) setState(format string, a ...interface{}) {
 	state := fmt.Sprintf(format, a...)
-	log.Println(host.Address, state)
+	log.Printf("[%s]: %s", host.Address, state)
 	host.State = state
 }
 
+func (host *Host) incrementTotal(size uint64) {
+	host.TotalCount++
+	host.TotalSize += size
+}
+
+// Abort aborts a running crawl.
 func (host *Host) Abort() {
 	host.Running = false
 }
 
-func (host *Host) Run() {
+func (host *Host) Run() bool {
+	if host.Running {
+		return false
+	}
+
+	host.TotalCount = 0
+	host.TotalSize = 0
 	host.Running = true
 	hosts.wg.Add(1)
 
 	go func() {
-		host.Error = nil
-		host.Started = time.Now()
-
-		host.Connect()
-		host.Login()
-		host.Crawl()
-		host.Conn.Quit()
-
-		index.DeleteOutdated(host.Address, host.Started)
-
-		host.Finished = time.Now()
-
-		host.Running = false
+		host.run()
 		hosts.wg.Done()
 	}()
+
+	return true
 }
 
-// Try to connect as long as the server is not obsolete
+func (host *Host) run() {
+	host.Error = nil
+	host.Started = time.Now()
+
+	host.Connect()
+	host.Login()
+	host.Crawl()
+	host.conn.Quit()
+
+	index.DeleteOutdated(host.Address, host.Started)
+
+	host.Finished = time.Now()
+	host.Running = false
+}
+
+// Connect tries to connect as long as the server is not obsolete
 // This function does not return errors as high-load FTPs
 // do likely need hundreds of connection retries
 func (host *Host) Connect() {
 	attempt := 1
 
 	for host.Running {
-		host.SetState("connecting (attempt %d)", attempt)
+		host.setState("connecting (attempt %d)", attempt)
 
-		host.Conn, host.Error = ftp.Connect(net.JoinHostPort(host.Address, "21"))
+		host.conn, host.Error = ftp.Connect(net.JoinHostPort(host.Address, "21"))
 		if host.Error == nil {
 			break
 		}
 
-		host.SetState("connecting (attempt %d failed)", attempt)
-		time.Sleep(2 * time.Second)
-		attempt += 1
+		host.setState("connecting (attempt %d failed)", attempt)
+		time.Sleep(connectRetryInterval)
+		attempt++
 	}
 }
 
-// Try to login as anonymous user
-// This function does not return errors as high-load FTPs
-// do likely need hundreds of login retries
+// Login tries to login as anonymous user.
+// This function does not return on errors as high-load FTPs
+// do likely need hundreds of login retries.
 func (host *Host) Login() {
 	attempt := 1
 
 	for host.Running {
-		host.SetState("logging in (attempt %d)", attempt)
+		host.setState("logging in (attempt %d)", attempt)
 
-		host.Error = host.Conn.Login("anonymous", "anonymous")
+		host.Error = host.conn.Login("anonymous", "anonymous")
 
 		if host.Error == nil {
-			host.SetState("login successful")
+			host.setState("login successful")
 			break
 		}
 
@@ -123,22 +143,22 @@ func (host *Host) Login() {
 			return
 		}
 
-		host.SetState("logging in (attempt %d failed)", attempt)
-		time.Sleep(2 * time.Second)
-		attempt += 1
+		host.setState("logging in (attempt %d failed)", attempt)
+		time.Sleep(loginRetryInterval)
+		attempt++
 	}
 }
 
 // Recursively walk through all directories
 func (host *Host) Crawl() {
 	var pwd string
-	pwd, host.Error = host.Conn.CurrentDir()
+	pwd, host.Error = host.conn.CurrentDir()
 	if host.Error != nil {
 		return
 	}
 
 	host.crawlDirectoryRecursive(pwd)
-	host.SetState("crawling finished")
+	host.setState("crawling finished")
 
 	return
 }
@@ -147,15 +167,16 @@ func (host *Host) Crawl() {
 func storeEntries(host *Host, dir string, children []*FileEntry) {
 	subdirs := make(map[string]bool)
 
+	// Iterate over children
 	for _, entry := range children {
-		if entry.Type != "file" {
+		if entry.Type == entryTypeDirectory {
 			subdirs[entry.Name] = true
 		}
 		index.addToIndex(host.Address, dir, entry)
 	}
 
 	// Create output directory
-	outputDir := path.Join(host.CacheDir(), dir)
+	outputDir := path.Join(host.cacheDir(), dir)
 	os.MkdirAll(outputDir, 0755)
 
 	// Save JSON
@@ -175,19 +196,19 @@ func storeEntries(host *Host, dir string, children []*FileEntry) {
 }
 
 func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
-	host.SetState("crawling: %s", dir)
+	host.setState("crawling: %s", dir)
 
 	children := make([]*FileEntry, 0, 128)
 	result = &FileEntry{
 		Name: filepath.Base(dir),
-		Type: "dir",
+		Type: entryTypeDirectory,
 	}
 
 	var list []*ftp.Entry
-	list, host.Error = host.Conn.List(dir)
+	list, host.Error = host.conn.List(dir)
 
 	if host.Error != nil {
-		log.Println(host.Address, host.Error)
+		host.setState("crawling failed: %s", host.Error)
 	}
 
 	// Iterate over directory content
@@ -197,7 +218,6 @@ func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
 		}
 
 		ff := path.Join(dir, file.Name)
-		var entry *FileEntry
 
 		switch file.Type {
 		case ftp.EntryTypeFolder:
@@ -205,21 +225,21 @@ func (host *Host) crawlDirectoryRecursive(dir string) (result *FileEntry) {
 				continue
 			}
 			if file.Name != cacheFilename {
-				entry = host.crawlDirectoryRecursive(ff)
+				entry := host.crawlDirectoryRecursive(ff)
 				result.Count += entry.Count
 				result.Size += entry.Size
 				children = append(children, entry)
 			}
 
 		case ftp.EntryTypeFile:
-			entry = &FileEntry{
+			entry := &FileEntry{
 				Name: filepath.Base(ff),
 				Size: file.Size,
-				Type: "file",
+				Type: entryTypeFile,
 			}
-			result.Count += 1
+			result.Count++
 			result.Size += file.Size
-			host.FilesCount += 1
+			host.incrementTotal(entry.Size)
 			children = append(children, entry)
 		}
 	}
