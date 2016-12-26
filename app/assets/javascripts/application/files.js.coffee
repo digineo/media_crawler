@@ -8,6 +8,8 @@ updateTable = ->
   entries   = files.find(".entries")
   $path     = $("#path")
   $modified = $("#modified")
+  $link     = $("#link")
+
 
   # Get Hash
   hash  = window.location.hash
@@ -18,24 +20,28 @@ updateTable = ->
     path  = ""
     parts = []
 
-  # Build Navigation
   $path.html("")
+
+  # Build Navigation
   for part, i in parts
     if i == parts.length-1
-      $path.append part
+      $path.append decodeURI(part)
     else
-      $path.append $("<a></a>", href: "#" + parts[0..i].join("/")).text(part)
+      $path.append $("<a></a>", href: "#" + parts[0..i].join("/")).text(decodeURI(part))
     $path.append "/"
 
   # Set window title
   document.title = $("h1").text()
 
   # Load directory content
-  $.getJSON "/data/#{server_id}/#{path}index.json", (data, status, xhr)->
+  $.getJSON "/data/#{server_id}/entries/#{path}index.json", (data, status, xhr)->
     modified = xhr.getResponseHeader("Last-Modified")
     total   = $.map(data, (c)-> c.size).sum()
 
     $modified.text modified
+
+    uri = $link.data("baseUri") + path
+    $link.attr("href", uri).text(uri)
 
     # Clear entries
     entries.html("")

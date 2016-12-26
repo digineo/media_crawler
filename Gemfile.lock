@@ -251,9 +251,6 @@ GEM
     thor (0.19.4)
     thread_safe (0.3.5)
     tilt (2.0.5)
-    turbolinks (5.0.1)
-      turbolinks-source (~> 5)
-    turbolinks-source (5.0.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     uglifier (3.0.4)
@@ -293,7 +290,6 @@ DEPENDENCIES
   shoulda-matchers
   therubyracer
   thin
-  turbolinks
   uglifier (>= 2.6)
 
 BUNDLED WITH

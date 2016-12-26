@@ -5,8 +5,9 @@ MediaCrawler::Application.routes.draw do
 
   get 'usage'     => 'static#usage'
   get 'resources' => 'resources#index'
+  get 'search'    => 'paths#index'
 
-  root :to => "paths#index"
+  root :to => "servers#index"
 
   # See how all your routes lay out with "rake routes"
 

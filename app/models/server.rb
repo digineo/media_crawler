@@ -5,9 +5,17 @@ class Server
   def self.all
     status = self.status['hosts'] rescue []
 
-    MediaCrawler::Application.config.data_root.children.map do |path|
+    list = MediaCrawler::Application.config.data_root.children.map do |path|
       Server.new path, status.find{|s| s["address"] == path.basename.to_s }
     end
+
+    def list.stats
+      {
+        size:  map(&:size).compact.sum,
+        count: map(&:count).compact.sum,
+      }
+    end
+    list
   end
 
   def self.status
@@ -54,7 +62,11 @@ class Server
   end
 
   def updated_at
-    path.join("index.json").mtime rescue nil
+    path.join("entries/index.json").mtime rescue nil
+  end
+
+  def has_download?
+    path.join("index.csv.gz").exist?
   end
 
 end

@@ -1,14 +1,18 @@
 %h1<
-  = link_to params[:id], '#', id: 'host'
+  = link_to @host, '#', id: 'host'
   = "/"
   %span#path
 
-%p
-  Cached at:
-  %span#modified
+%dl.dl-horizontal
+  %dt URL:
+  %dd
+    %a#link{href:'#', 'data-base-uri' => @uri}= @uri
+  %dt Cached:
+  %dd
+    %span#modified
 
 .row
   = render 'search'
 
-#files{ 'data-server-id' => params[:id] }
+#files{ 'data-server-id' => @host }
   %ol.entries

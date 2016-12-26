@@ -1,12 +1,13 @@
 - content_for :title, "Servers"
 %h1 Servers
 
-- if false
-  %p
-    %strong #{@stats.count} files
-    indexed with a total size of
-    %strong= number_to_human_size @stats.filesize
-    \.
+%p
+  %strong #{@hosts.size} servers
+  with
+  %strong #{@stats[:count]} entries
+  and total size of
+  %strong #{number_to_human_size @stats[:size]}
+  \.
 
 %table.table
   %thead

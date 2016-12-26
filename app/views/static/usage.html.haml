@@ -1,13 +1,15 @@
 - content_for :title, "Usage"
 %h1 Usage
 
+%h2 Search
+
 %dl.dl-horizontal
   %dt host
   %dd
     Search a specific host.
     .example
       %code host:1.2.3.4
-  
+
   %dt path
   %dd
     Search within a specific path. Use double quotes if the path contains spaces.
@@ -21,23 +23,23 @@
     Search for files or directories of a specific size. Examples:
     .example
       %code size:>1g
-      for files/directories of more than 1 Gigabytes 
+      for files/directories of more than 1 Gigabytes
     .example
       %code size:<3g
-      for files/directories of less than 3 Gigabytes 
+      for files/directories of less than 3 Gigabytes
     .example
       %code size:5g..15g
-      for files/directories between 5 and 15 Gigabytes 
+      for files/directories between 5 and 15 Gigabytes
 
   %dt objects
   %dd
     Search for directories with a specific amount of objects. Examples:
     .example
       %code objects:<50
-      for directories with less than 50 objects 
+      for directories with less than 50 objects
     .example
       %code objects:>1k
-      for directories with more than 1024 objects 
+      for directories with more than 1024 objects
     .example
       %code objects:30..150
       for directories with between 50 and 150 objects

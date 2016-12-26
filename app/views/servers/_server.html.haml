@@ -8,6 +8,8 @@
   %td
     - if server.updated_at
       = link_to 'Browse Cache', server_files_path(server), class: 'btn btn-xs btn-primary'
+    - if server.has_download?
+      = link_to 'Download Index', "/data/#{server.address}/index.csv.gz", class: 'btn btn-xs btn-primary'
   %td
     = server.updated_at ? "#{time_ago_in_words(server.updated_at)} ago" : 'never'
   %td
