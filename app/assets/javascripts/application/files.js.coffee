@@ -31,7 +31,7 @@ updateTable = ->
     $path.append "/"
 
   # Set window title
-  document.title = $("h1").text()
+  document.title = "cyber of " + $("h1").text()
 
   # Load directory content
   $.getJSON "/data/#{server_id}/entries/#{path}index.json", (data, status, xhr)->
