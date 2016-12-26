@@ -213,7 +213,7 @@ func storeEntries(host *Host, dir string, children []*FileEntry) {
 	}
 
 	// Create output directory
-	outputDir := path.Join(host.cacheDir(), dir)
+	outputDir := path.Join(host.cacheDir(), "entries", dir)
 	os.MkdirAll(outputDir, 0755)
 
 	// Save JSON
