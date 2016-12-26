@@ -13,7 +13,7 @@ import (
 
 type hash map[string]interface{}
 
-var index = createIndex()
+var index *Index
 
 var indexSettings = hash{
 	"index": hash{
@@ -104,7 +104,7 @@ type Index struct {
 	wg      sync.WaitGroup
 }
 
-func createIndex() *Index {
+func newIndex(workers int) *Index {
 	index := &Index{
 		Name:    "crawler",
 		Mapping: "path",
@@ -112,7 +112,13 @@ func createIndex() *Index {
 		Conn:    elastigo.NewConn(),
 	}
 	index.Conn.Domain = "localhost"
+	index.startWorkers(workers)
 	return index
+}
+
+func (index *Index) close() {
+	close(index.Channel)
+	index.wg.Wait()
 }
 
 // DropAndCreate recreates the index.

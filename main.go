@@ -30,12 +30,15 @@ func main() {
 
 	// Start control socket handler
 	if socketPath != "" {
-		newControlSocket()
+		controlSocket = newControlSocket()
+		defer controlSocket.Close()
 		go scheduler()
 	}
 
-	// Start index routine
-	index.startWorkers(indexWorkers)
+	if indexWorkers > 0 {
+		index = newIndex(indexWorkers)
+		defer index.close()
+	}
 
 	// Any work to do?
 	for _, host := range args {
@@ -53,11 +56,4 @@ func main() {
 	if len(args) > 0 {
 		hosts.wg.Wait()
 	}
-
-	if controlSocket != nil {
-		controlSocket.Close()
-	}
-
-	close(index.Channel)
-	index.wg.Wait()
 }

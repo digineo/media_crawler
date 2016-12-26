@@ -21,25 +21,26 @@ var (
 	}
 )
 
-func newControlSocket() {
+func newControlSocket() net.Listener {
 	log.Println("Starting control socket at", socketPath)
 	os.Remove(socketPath)
 
 	var err error
-	controlSocket, err := net.Listen("unix", socketPath)
+	sock, err := net.Listen("unix", socketPath)
 	if err != nil {
 		log.Fatal("listen error:", err)
 	}
 
 	go func() {
 		for {
-			if fd, err := controlSocket.Accept(); err != nil {
+			if fd, err := sock.Accept(); err != nil {
 				log.Fatal("accept error:", err)
 			} else {
 				go handleControlConn(fd)
 			}
 		}
 	}()
+	return sock
 }
 
 func handleControlConn(fd net.Conn) {

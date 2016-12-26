@@ -100,7 +100,9 @@ func (host *Host) run() {
 	host.Crawl()
 	host.conn.Quit()
 
-	index.DeleteOutdated(host.Address, host.Started)
+	if index != nil {
+		index.DeleteOutdated(host.Address, host.Started)
+	}
 
 	now := time.Now()
 	host.Finished = &now
@@ -202,7 +204,9 @@ func storeEntries(host *Host, dir string, children []*FileEntry) {
 		if entry.Type == entryTypeDirectory {
 			subdirs[entry.Name] = true
 		}
-		index.addToIndex(host.Address, dir, entry)
+		if index != nil {
+			index.addToIndex(host.Address, dir, entry)
+		}
 		if host.csvWriter != nil {
 			host.csvWriter.Write(dir, entry)
 		}
