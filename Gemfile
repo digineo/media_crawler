@@ -24,7 +24,7 @@ group :development, :test do
 end
 
 group :production do
-  gem 'thin'
+  gem 'puma'
 end
 
 group :development do
@@ -39,5 +39,4 @@ end
 group :deployment do
   gem 'capistrano', '~> 3.5'
   gem 'capistrano-rails'
-  gem 'capistrano-thin'
 end
