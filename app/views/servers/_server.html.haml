@@ -5,7 +5,7 @@
     = server.count || "n/a"
   %td
     = link_to "ftp://#{server}/", "ftp://#{server}/"
-  %td
+  %td.text-nowrap
     - if server.updated_at
       = link_to 'Browse Cache', server_files_path(server), class: 'btn btn-xs btn-primary'
     - if server.has_download?
